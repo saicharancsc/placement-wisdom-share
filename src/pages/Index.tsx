@@ -5,6 +5,7 @@ import BlogCard from '../components/BlogCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Clock, Star, Filter } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const [sortBy, setSortBy] = React.useState('recent');
@@ -103,20 +104,44 @@ const Index = () => {
     }
   ];
 
-  const popularTags = [
-    "Google", "Microsoft", "Amazon", "Meta", "Goldman Sachs",
-    "SDE", "Data Science", "Product Manager", "Consulting",
-    "Interview Experience", "Coding", "System Design", "Behavioral"
-  ];
+  // Calculate live data from blogPosts
+  const popularTags = React.useMemo(() => {
+    const tagCounts: { [key: string]: number } = {};
+    blogPosts.forEach(post => {
+      post.tags.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+    return Object.entries(tagCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 13)
+      .map(([tag]) => tag);
+  }, [blogPosts]);
 
-  const featuredCompanies = [
-    { name: "Google", count: 45, color: "bg-blue-500" },
-    { name: "Microsoft", count: 38, color: "bg-green-500" },
-    { name: "Amazon", count: 52, color: "bg-orange-500" },
-    { name: "Meta", count: 29, color: "bg-blue-600" },
-    { name: "Goldman Sachs", count: 21, color: "bg-yellow-600" },
-    { name: "McKinsey", count: 18, color: "bg-purple-500" }
-  ];
+  const featuredCompanies = React.useMemo(() => {
+    const companyCounts: { [key: string]: number } = {};
+    const companyColors: { [key: string]: string } = {
+      'Google': 'bg-blue-500',
+      'Microsoft': 'bg-green-500',
+      'Amazon': 'bg-orange-500',
+      'Meta': 'bg-blue-600',
+      'Goldman Sachs': 'bg-yellow-600',
+      'McKinsey': 'bg-purple-500'
+    };
+    
+    blogPosts.forEach(post => {
+      companyCounts[post.company] = (companyCounts[post.company] || 0) + 1;
+    });
+    
+    return Object.entries(companyCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 6)
+      .map(([company, count]) => ({
+        name: company,
+        count,
+        color: companyColors[company] || 'bg-gray-500'
+      }));
+  }, [blogPosts]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,13 +162,15 @@ const Index = () => {
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-3 text-lg">
                 Explore Experiences
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-3 text-lg"
-              >
-                Share Your Story
-              </Button>
+              <Link to="/create">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-3 text-lg"
+                >
+                  Share Your Story
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -8,12 +8,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(true); // Mock login state
+  const navigate = useNavigate();
   
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleSignup = () => {
+    navigate('/signup');
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,6 +75,12 @@ const Navigation = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/liked" className="flex items-center">
+                        <Heart className="mr-2 h-4 w-4" />
+                        Liked Posts
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/bookmarks" className="flex items-center">
                         <Bookmark className="mr-2 h-4 w-4" />
                         Bookmarks
@@ -80,10 +95,13 @@ const Navigation = () => {
               </>
             ) : (
               <div className="flex space-x-2">
-                <Button variant="outline" onClick={() => setIsLoggedIn(true)}>
+                <Button variant="outline" onClick={handleLogin}>
                   Login
                 </Button>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  onClick={handleSignup}
+                >
                   Sign Up
                 </Button>
               </div>
