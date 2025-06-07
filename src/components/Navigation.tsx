@@ -10,17 +10,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navigation = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(true); // Mock login state
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   
-  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleSignup = () => {
-    navigate('/signup');
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
@@ -49,7 +51,7 @@ const Navigation = () => {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
-            {isLoggedIn ? (
+            {user ? (
               <>
                 <Link to="/create">
                   <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
@@ -63,7 +65,7 @@ const Navigation = () => {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder.svg" alt="Profile" />
-                        <AvatarFallback>U</AvatarFallback>
+                        <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
@@ -86,7 +88,7 @@ const Navigation = () => {
                         Bookmarks
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                    <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </DropdownMenuItem>
@@ -95,15 +97,16 @@ const Navigation = () => {
               </>
             ) : (
               <div className="flex space-x-2">
-                <Button variant="outline" onClick={handleLogin}>
-                  Login
-                </Button>
-                <Button 
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  onClick={handleSignup}
-                >
-                  Sign Up
-                </Button>
+                <Link to="/login">
+                  <Button variant="outline">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    Sign Up
+                  </Button>
+                </Link>
               </div>
             )}
           </div>

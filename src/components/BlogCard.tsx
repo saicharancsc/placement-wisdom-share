@@ -6,21 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Bookmark, Calendar, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Blog } from '@/hooks/useBlogs';
+import { useLikeBlog } from '@/hooks/useLikes';
+import { useAuth } from '@/hooks/useAuth';
 
-interface BlogCardProps {
-  id: string;
-  title: string;
-  company: string;
-  role: string;
-  author: string;
-  authorAvatar?: string;
-  excerpt: string;
-  tags: string[];
+interface BlogCardProps extends Blog {
   likes: number;
   comments: number;
   createdAt: string;
-  isLiked?: boolean;
-  isBookmarked?: boolean;
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({
@@ -29,26 +22,50 @@ const BlogCard: React.FC<BlogCardProps> = ({
   company,
   role,
   author,
-  authorAvatar,
-  excerpt,
+  content,
   tags,
   likes,
   comments,
   createdAt,
-  isLiked = false,
-  isBookmarked = false,
+  is_liked = false,
+  is_bookmarked = false,
 }) => {
-  const [liked, setLiked] = React.useState(isLiked);
-  const [bookmarked, setBookmarked] = React.useState(isBookmarked);
+  const { user } = useAuth();
+  const likeMutation = useLikeBlog();
+  const [liked, setLiked] = React.useState(is_liked);
+  const [bookmarked, setBookmarked] = React.useState(is_bookmarked);
   const [likeCount, setLikeCount] = React.useState(likes);
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+  const handleLike = async () => {
+    if (!user) return;
+    
+    const newLikedState = !liked;
+    setLiked(newLikedState);
+    setLikeCount(newLikedState ? likeCount + 1 : likeCount - 1);
+
+    try {
+      await likeMutation.mutateAsync({ blogId: id, isLiked: liked });
+    } catch (error) {
+      // Revert on error
+      setLiked(liked);
+      setLikeCount(likeCount);
+    }
   };
 
   const handleBookmark = () => {
     setBookmarked(!bookmarked);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+    return `${Math.ceil(diffDays / 30)} months ago`;
   };
 
   return (
@@ -57,14 +74,14 @@ const BlogCard: React.FC<BlogCardProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="w-10 h-10">
-              <AvatarImage src={authorAvatar} />
-              <AvatarFallback>{author.charAt(0)}</AvatarFallback>
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback>{author?.name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium text-gray-900">{author}</p>
+              <p className="font-medium text-gray-900">{author?.name || 'Anonymous'}</p>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Calendar className="w-3 h-3" />
-                <span>{createdAt}</span>
+                <span>{formatDate(createdAt)}</span>
               </div>
             </div>
           </div>
@@ -96,11 +113,11 @@ const BlogCard: React.FC<BlogCardProps> = ({
           </Link>
           
           <p className="text-gray-600 line-clamp-3 leading-relaxed">
-            {excerpt}
+            {content.substring(0, 200)}...
           </p>
           
           <div className="flex flex-wrap gap-2">
-            {tags.map((tag, index) => (
+            {tags?.map((tag, index) => (
               <Badge key={index} variant="outline" className="text-xs">
                 {tag}
               </Badge>
@@ -114,6 +131,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
                 size="sm"
                 onClick={handleLike}
                 className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
+                disabled={!user}
               >
                 <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
                 {likeCount}

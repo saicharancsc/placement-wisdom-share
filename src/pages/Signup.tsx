@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const Signup = () => {
   const [formData, setFormData] = React.useState({
@@ -13,15 +14,32 @@ const Signup = () => {
     password: '',
     confirmPassword: ''
   });
+  const [loading, setLoading] = React.useState(false);
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    // Handle signup logic here
-    console.log('Signup attempt:', formData);
+
+    setLoading(true);
+    try {
+      await signUp(formData.email, formData.password, formData.name);
+      navigate('/login');
+    } catch (error) {
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -54,6 +72,7 @@ const Signup = () => {
                 onChange={(e) => handleChange('name', e.target.value)}
                 placeholder="Enter your full name"
                 required
+                disabled={loading}
               />
             </div>
             <div>
@@ -67,6 +86,7 @@ const Signup = () => {
                 onChange={(e) => handleChange('email', e.target.value)}
                 placeholder="Enter your email"
                 required
+                disabled={loading}
               />
             </div>
             <div>
@@ -80,6 +100,7 @@ const Signup = () => {
                 onChange={(e) => handleChange('password', e.target.value)}
                 placeholder="Create a password"
                 required
+                disabled={loading}
               />
             </div>
             <div>
@@ -93,10 +114,15 @@ const Signup = () => {
                 onChange={(e) => handleChange('confirmPassword', e.target.value)}
                 placeholder="Confirm your password"
                 required
+                disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              Sign Up
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              disabled={loading}
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </form>
           <div className="mt-6 text-center">
