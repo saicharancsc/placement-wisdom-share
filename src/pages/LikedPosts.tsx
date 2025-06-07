@@ -2,42 +2,87 @@
 import React from 'react';
 import Navigation from '../components/Navigation';
 import BlogCard from '../components/BlogCard';
-import { Heart } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, Heart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const LikedPosts = () => {
-  // Mock liked posts data
-  const likedPosts = [
-    {
-      id: "2",
-      title: "Amazon SDE Interview Experience - All Rounds Covered",
-      company: "Amazon",
-      role: "SDE",
-      author: "Rahul Kumar",
-      authorAvatar: "/placeholder.svg",
-      excerpt: "Complete breakdown of Amazon's SDE interview process including 4 rounds of technical interviews, behavioral questions based on leadership principles, and detailed preparation strategy that helped me crack the interview.",
-      tags: ["Amazon", "SDE", "Leadership Principles", "Behavioral", "Coding"],
-      likes: 65,
-      comments: 18,
-      createdAt: "5 days ago",
-      isLiked: true,
-      isBookmarked: false
+  const { user } = useAuth();
+
+  const { data: likedBlogs, isLoading, error } = useQuery({
+    queryKey: ['liked-blogs', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('likes')
+        .select(`
+          blog_id,
+          blogs!inner(
+            *,
+            author:users!blogs_author_id_fkey(id, name, email),
+            likes_count:likes(count),
+            comments_count:comments(count)
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      
+      return data?.map(like => ({
+        ...like.blogs,
+        likes_count: like.blogs.likes_count?.[0]?.count || 0,
+        comments_count: like.blogs.comments_count?.[0]?.count || 0,
+      })) || [];
     },
-    {
-      id: "5",
-      title: "Complete Guide to System Design Interviews",
-      company: "Meta",
-      role: "SDE",
-      author: "Vikram Reddy",
-      authorAvatar: "/placeholder.svg",
-      excerpt: "Master system design interviews with this comprehensive guide covering scalability, database design, load balancing, and real examples from FAANG interviews. Perfect for senior SDE positions.",
-      tags: ["Meta", "System Design", "Scalability", "Architecture", "Senior SDE"],
-      likes: 156,
-      comments: 34,
-      createdAt: "2 weeks ago",
-      isLiked: true,
-      isBookmarked: true
-    }
-  ];
+    enabled: !!user,
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Sign In</h2>
+            <p className="text-gray-600 mb-6">You need to be signed in to view your liked posts.</p>
+            <Link to="/login">
+              <Button>Sign In</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Error loading liked posts</h2>
+            <p className="text-gray-600">Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -45,27 +90,33 @@ const LikedPosts = () => {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-4">
-            <Heart className="w-8 h-8 text-red-500 fill-current" />
-            <h1 className="text-3xl font-bold text-gray-900">Liked Posts</h1>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Liked Posts</h1>
           <p className="text-gray-600">
-            All the posts you've liked are saved here for easy access.
+            Your favorite placement experiences and insights.
           </p>
         </div>
 
         <div className="space-y-6">
-          {likedPosts.length > 0 ? (
-            likedPosts.map((post) => (
-              <BlogCard key={post.id} {...post} />
+          {likedBlogs && likedBlogs.length > 0 ? (
+            likedBlogs.map((blog) => (
+              <BlogCard 
+                key={blog.id} 
+                {...blog}
+                likes={blog.likes_count || 0}
+                comments={blog.comments_count || 0}
+                createdAt={blog.created_at}
+              />
             ))
           ) : (
             <div className="text-center py-12">
-              <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No liked posts yet</h3>
-              <p className="text-gray-600">
-                Start exploring and like posts that interest you!
+              <p className="text-gray-600 mb-6">
+                Start exploring and like posts that you find helpful!
               </p>
+              <Link to="/">
+                <Button>Explore Posts</Button>
+              </Link>
             </div>
           )}
         </div>

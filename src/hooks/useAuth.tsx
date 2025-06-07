@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: {
           name,
         },
+        emailRedirectTo: `${window.location.origin}/`,
       },
     });
 
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     toast({
       title: "Success",
-      description: "Please check your email to verify your account.",
+      description: "Account created! Please check your email to confirm your account before signing in.",
     });
   };
 
@@ -70,17 +71,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     if (error) {
+      // Show more user-friendly error messages
+      let errorMessage = error.message;
+      if (error.message === 'Email not confirmed') {
+        errorMessage = 'Please check your email and click the confirmation link before signing in.';
+      } else if (error.message === 'Invalid login credentials') {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      }
+      
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Sign In Error",
+        description: errorMessage,
         variant: "destructive",
       });
       throw error;
     }
 
     toast({
-      title: "Success",
-      description: "Successfully signed in!",
+      title: "Welcome back!",
+      description: "Successfully signed in.",
     });
   };
 

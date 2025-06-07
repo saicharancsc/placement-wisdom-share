@@ -34,7 +34,8 @@ const Signup = () => {
     setLoading(true);
     try {
       await signUp(formData.email, formData.password, formData.name);
-      navigate('/login');
+      // Don't navigate immediately - let the user confirm their email first
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     } catch (error) {
       console.error('Signup error:', error);
     } finally {
@@ -132,6 +133,11 @@ const Signup = () => {
                 Sign in here
               </Link>
             </p>
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-800">
+                📧 After signing up, check your email for a confirmation link. You must confirm your email before you can sign in.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

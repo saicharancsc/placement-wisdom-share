@@ -39,7 +39,13 @@ export const useBlogs = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Blog[];
+      
+      // Transform the data to match our Blog interface
+      return data?.map(blog => ({
+        ...blog,
+        likes_count: blog.likes_count?.[0]?.count || 0,
+        comments_count: blog.comments_count?.[0]?.count || 0,
+      })) as Blog[];
     },
   });
 };
@@ -60,7 +66,13 @@ export const useBlog = (id: string) => {
         .single();
 
       if (error) throw error;
-      return data as Blog;
+      
+      // Transform the data to match our Blog interface
+      return {
+        ...data,
+        likes_count: data.likes_count?.[0]?.count || 0,
+        comments_count: data.comments_count?.[0]?.count || 0,
+      } as Blog;
     },
   });
 };
