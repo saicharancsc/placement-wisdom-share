@@ -10,6 +10,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useBlog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
+import { useComments, useCreateComment } from '@/hooks/useComments';
 import Navigation from './Navigation';
 
 const BlogPost = () => {
@@ -17,7 +18,9 @@ const BlogPost = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: blogPost, isLoading, error } = useBlog(id || '');
+  const { data: comments, isLoading: commentsLoading } = useComments(id || '');
   const likeMutation = useLikeBlog();
+  const createCommentMutation = useCreateComment();
   
   const [liked, setLiked] = React.useState(false);
   const [bookmarked, setBookmarked] = React.useState(false);
@@ -57,10 +60,17 @@ const BlogPost = () => {
     setBookmarked(!bookmarked);
   };
 
-  const handleCommentSubmit = () => {
-    if (comment.trim()) {
-      console.log('Comment submitted:', comment);
-      setComment('');
+  const handleCommentSubmit = async () => {
+    if (comment.trim() && blogPost) {
+      try {
+        await createCommentMutation.mutateAsync({
+          content: comment.trim(),
+          blogId: blogPost.id,
+        });
+        setComment('');
+      } catch (error) {
+        console.error('Error posting comment:', error);
+      }
     }
   };
 
@@ -101,26 +111,6 @@ const BlogPost = () => {
       </div>
     );
   }
-
-  // Mock comments data - in real app, fetch from database
-  const mockComments = [
-    {
-      id: 1,
-      author: "Rahul Kumar",
-      avatar: "/placeholder.svg",
-      content: "Thanks for sharing this! Really helpful. How much time did you spend preparing for system design?",
-      time: "2 days ago",
-      likes: 5
-    },
-    {
-      id: 2,
-      author: "Sneha Patel",
-      avatar: "/placeholder.svg",
-      content: "Congratulations! This gives me hope. I'm preparing for next year's internships.",
-      time: "1 day ago",
-      likes: 3
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -203,7 +193,7 @@ const BlogPost = () => {
                 </Button>
                 <Button variant="ghost" className="text-gray-500 hover:text-blue-500">
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  {blogPost.comments_count || 0} Comments
+                  {comments?.length || 0} Comments
                 </Button>
               </div>
             </div>
@@ -213,7 +203,7 @@ const BlogPost = () => {
         {/* Comments Section */}
         <Card>
           <CardHeader>
-            <h3 className="text-xl font-semibold">Comments ({mockComments.length})</h3>
+            <h3 className="text-xl font-semibold">Comments ({comments?.length || 0})</h3>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Add Comment */}
@@ -228,8 +218,12 @@ const BlogPost = () => {
                 />
                 <Button 
                   onClick={handleCommentSubmit}
+                  disabled={createCommentMutation.isPending || !comment.trim()}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
+                  {createCommentMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : null}
                   Post Comment
                 </Button>
               </div>
@@ -237,27 +231,34 @@ const BlogPost = () => {
             
             {/* Comments List */}
             <div className="space-y-4">
-              {mockComments.map((comment) => (
-                <div key={comment.id} className="border-l-2 border-gray-100 pl-4">
-                  <div className="flex items-start space-x-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={comment.avatar} />
-                      <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-medium text-sm">{comment.author}</span>
-                        <span className="text-xs text-gray-500">{comment.time}</span>
+              {commentsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                </div>
+              ) : comments && comments.length > 0 ? (
+                comments.map((comment) => (
+                  <div key={comment.id} className="border-l-2 border-gray-100 pl-4">
+                    <div className="flex items-start space-x-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarFallback>{comment.author?.name?.charAt(0) || 'U'}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <span className="font-medium text-sm">{comment.author?.name || 'Anonymous'}</span>
+                          <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed mb-2">{comment.content}</p>
                       </div>
-                      <p className="text-gray-700 text-sm leading-relaxed mb-2">{comment.content}</p>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-500 p-0 h-auto">
-                        <Heart className="w-3 h-3 mr-1" />
-                        {comment.likes}
-                      </Button>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No comments yet. Be the first to comment!</p>
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
