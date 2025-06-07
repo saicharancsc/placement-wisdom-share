@@ -12,7 +12,12 @@ import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart } from 'luc
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
-const Navigation = () => {
+interface NavigationProps {
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+}
+
+const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   
@@ -38,16 +43,20 @@ const Navigation = () => {
           </Link>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-lg mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search by company, role, or skills..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+          {onSearchChange && (
+            <div className="flex-1 max-w-lg mx-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search by company, role, or skills..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
