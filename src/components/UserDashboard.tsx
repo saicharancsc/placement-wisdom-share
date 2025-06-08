@@ -11,98 +11,47 @@ import {
   FileText, 
   Eye, 
   MessageCircle, 
-  TrendingUp,
   Calendar,
   Edit,
   Trash2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserBlogs, useDeleteBlog } from '@/hooks/useUserBlogs';
+import { Loader2 } from 'lucide-react';
 
 const UserDashboard = () => {
-  const userStats = {
-    postsCount: 3,
-    totalViews: 1250,
-    totalLikes: 89,
-    totalComments: 23
+  const { user } = useAuth();
+  const { data: userPosts, isLoading } = useUserBlogs();
+  const deletePost = useDeleteBlog();
+  const navigate = useNavigate();
+
+  const handleDelete = async (blogId: string) => {
+    if (window.confirm('Are you sure you want to delete this blog post?')) {
+      deletePost.mutate(blogId);
+    }
   };
 
-  const userPosts = [
-    {
-      id: "1",
-      title: "My Google SDE Intern Interview Experience - From Application to Offer",
-      company: "Google",
-      role: "SDE Intern",
-      views: 450,
-      likes: 47,
-      comments: 12,
-      createdAt: "3 days ago",
-      status: "published"
-    },
-    {
-      id: "2", 
-      title: "Microsoft Data Science Internship - Complete Journey",
-      company: "Microsoft",
-      role: "Data Science Intern",
-      views: 320,
-      likes: 28,
-      comments: 7,
-      createdAt: "1 week ago",
-      status: "published"
-    },
-    {
-      id: "3",
-      title: "Goldman Sachs Analyst Interview Tips and Experience",
-      company: "Goldman Sachs",
-      role: "Analyst",
-      views: 480,
-      likes: 14,
-      comments: 4,
-      createdAt: "2 weeks ago",
-      status: "published"
-    }
-  ];
+  const handleEdit = (blogId: string) => {
+    navigate(`/edit/${blogId}`);
+  };
 
-  const likedPosts = [
-    {
-      id: "4",
-      title: "Amazon SDE Interview Experience - All Rounds Covered",
-      author: "Rahul Kumar",
-      company: "Amazon",
-      role: "SDE",
-      likes: 65,
-      createdAt: "5 days ago"
-    },
-    {
-      id: "5",
-      title: "JP Morgan Summer Analyst Experience and Tips",
-      author: "Sneha Patel",
-      company: "JP Morgan",
-      role: "Summer Analyst",
-      likes: 42,
-      createdAt: "1 week ago"
-    }
-  ];
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </div>
+    );
+  }
 
-  const bookmarkedPosts = [
-    {
-      id: "6",
-      title: "Complete Guide to System Design Interviews",
-      author: "Arjun Singh",
-      company: "Meta",
-      role: "SDE",
-      likes: 156,
-      createdAt: "3 days ago"
-    },
-    {
-      id: "7",
-      title: "McKinsey Case Interview Preparation Guide",
-      author: "Priya Sharma",
-      company: "McKinsey",
-      role: "Business Analyst",
-      likes: 89,
-      createdAt: "1 week ago"
-    }
-  ];
+  const userStats = {
+    postsCount: userPosts?.length || 0,
+    totalViews: userPosts?.reduce((sum, post) => sum + (post.views || 0), 0) || 0,
+    totalLikes: userPosts?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0,
+    totalComments: userPosts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0,
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -112,13 +61,17 @@ const UserDashboard = () => {
           <div className="flex items-start space-x-6">
             <Avatar className="w-24 h-24">
               <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback className="text-2xl">PS</AvatarFallback>
+              <AvatarFallback className="text-2xl">
+                {user?.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">Priya Sharma</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {user?.user_metadata?.name || user?.email}
+              </h1>
               <p className="text-gray-600 mb-4">
-                Computer Science Student at IIT Delhi | Sharing placement experiences to help juniors
+                Sharing placement experiences to help peers succeed
               </p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -181,136 +134,107 @@ const UserDashboard = () => {
 
         {/* My Posts */}
         <TabsContent value="my-posts" className="space-y-4">
-          {userPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Badge variant="outline">{post.company}</Badge>
-                      <Badge variant="secondary">{post.role}</Badge>
-                      <Badge 
-                        variant={post.status === 'published' ? 'default' : 'secondary'}
-                        className={post.status === 'published' ? 'bg-green-100 text-green-700' : ''}
+          {userPosts && userPosts.length > 0 ? (
+            userPosts.map((post) => (
+              <Card key={post.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Badge variant="outline">{post.company}</Badge>
+                        <Badge variant="secondary">{post.role}</Badge>
+                        <Badge className="bg-green-100 text-green-700">
+                          published
+                        </Badge>
+                      </div>
+                      
+                      <Link to={`/blog/${post.id}`}>
+                        <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-2">
+                          {post.title}
+                        </h3>
+                      </Link>
+                      
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          {new Date(post.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center">
+                          <Heart className="w-4 h-4 mr-1" />
+                          {post.likes_count} likes
+                        </div>
+                        <div className="flex items-center">
+                          <MessageCircle className="w-4 h-4 mr-1" />
+                          {post.comments_count} comments
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2 ml-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEdit(post.id)}
                       >
-                        {post.status}
-                      </Badge>
-                    </div>
-                    
-                    <Link to={`/blog/${post.id}`}>
-                      <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-2">
-                        {post.title}
-                      </h3>
-                    </Link>
-                    
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {post.createdAt}
-                      </div>
-                      <div className="flex items-center">
-                        <Eye className="w-4 h-4 mr-1" />
-                        {post.views} views
-                      </div>
-                      <div className="flex items-center">
-                        <Heart className="w-4 h-4 mr-1" />
-                        {post.likes} likes
-                      </div>
-                      <div className="flex items-center">
-                        <MessageCircle className="w-4 h-4 mr-1" />
-                        {post.comments} comments
-                      </div>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => handleDelete(post.id)}
+                        disabled={deletePost.isPending}
+                      >
+                        {deletePost.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex space-x-2 ml-4">
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No posts yet
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Share your placement experience to help others!
+              </p>
+              <Link to="/create">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  Write Your First Post
+                </Button>
+              </Link>
+            </div>
+          )}
         </TabsContent>
 
-        {/* Liked Posts */}
+        {/* Liked Posts - Placeholder for now */}
         <TabsContent value="liked" className="space-y-4">
-          {likedPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Badge variant="outline">{post.company}</Badge>
-                  <Badge variant="secondary">{post.role}</Badge>
-                </div>
-                
-                <Link to={`/blog/${post.id}`}>
-                  <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-2">
-                    {post.title}
-                  </h3>
-                </Link>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>by {post.author}</span>
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {post.createdAt}
-                    </div>
-                    <div className="flex items-center">
-                      <Heart className="w-4 h-4 mr-1 text-red-500" />
-                      {post.likes} likes
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" size="sm">
-                    <Heart className="w-4 h-4 text-red-500 fill-current" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No liked posts yet
+            </h3>
+            <p className="text-gray-600">
+              Posts you like will appear here.
+            </p>
+          </div>
         </TabsContent>
 
-        {/* Bookmarked Posts */}
+        {/* Bookmarked Posts - Placeholder for now */}
         <TabsContent value="bookmarked" className="space-y-4">
-          {bookmarkedPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Badge variant="outline">{post.company}</Badge>
-                  <Badge variant="secondary">{post.role}</Badge>
-                </div>
-                
-                <Link to={`/blog/${post.id}`}>
-                  <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-2">
-                    {post.title}
-                  </h3>
-                </Link>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>by {post.author}</span>
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {post.createdAt}
-                    </div>
-                    <div className="flex items-center">
-                      <Heart className="w-4 h-4 mr-1" />
-                      {post.likes} likes
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" size="sm">
-                    <Bookmark className="w-4 h-4 text-blue-500 fill-current" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No bookmarked posts yet
+            </h3>
+            <p className="text-gray-600">
+              Posts you bookmark will appear here.
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
