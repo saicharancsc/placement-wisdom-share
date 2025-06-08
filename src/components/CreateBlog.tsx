@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { X, Plus, Loader2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useCreateBlog, useBlog, useUpdateBlog } from '@/hooks/useBlogs';
+import { useCreateBlog, useBlog } from '@/hooks/useBlogs';
+import { useUpdateBlog } from '@/hooks/useUserBlogs';
 import Navigation from './Navigation';
 
 const CreateBlog = () => {
