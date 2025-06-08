@@ -50,7 +50,7 @@ export const useBlogs = () => {
   });
 };
 
-export const useBlog = (id: string) => {
+export const useBlog = (id: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ['blog', id],
     queryFn: async () => {
@@ -74,6 +74,7 @@ export const useBlog = (id: string) => {
         comments_count: data.comments_count?.[0]?.count || 0,
       } as Blog;
     },
+    enabled: options?.enabled !== false && !!id,
   });
 };
 

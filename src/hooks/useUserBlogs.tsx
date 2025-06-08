@@ -63,3 +63,49 @@ export const useDeleteBlog = () => {
     },
   });
 };
+
+export const useUpdateBlog = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (blogData: {
+      id: string;
+      title: string;
+      content: string;
+      company: string;
+      role: string;
+      tags: string[];
+    }) => {
+      const { id, ...updateData } = blogData;
+      const { data, error } = await supabase
+        .from('blogs')
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['blog'] });
+      toast({
+        title: "Success",
+        description: "Blog post updated successfully!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+};

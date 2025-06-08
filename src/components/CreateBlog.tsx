@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,16 +6,19 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { X, Plus, Loader2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useCreateBlog } from '@/hooks/useBlogs';
+import { useCreateBlog, useBlog, useUpdateBlog } from '@/hooks/useBlogs';
 import Navigation from './Navigation';
 
 const CreateBlog = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { user } = useAuth();
   const createBlogMutation = useCreateBlog();
+  const updateBlogMutation = useUpdateBlog();
+  const { data: existingBlog, isLoading: blogLoading } = useBlog(id || '', { enabled: !!id });
   
   const [formData, setFormData] = React.useState({
     title: '',
@@ -27,11 +29,25 @@ const CreateBlog = () => {
   });
   const [newTag, setNewTag] = React.useState('');
 
+  const isEditing = !!id;
+
   React.useEffect(() => {
     if (!user) {
       navigate('/login');
     }
   }, [user, navigate]);
+
+  React.useEffect(() => {
+    if (existingBlog && isEditing) {
+      setFormData({
+        title: existingBlog.title,
+        company: existingBlog.company,
+        role: existingBlog.role,
+        content: existingBlog.content,
+        tags: existingBlog.tags || []
+      });
+    }
+  }, [existingBlog, isEditing]);
 
   const popularRoles = [
     "SDE Intern",
@@ -80,15 +96,30 @@ const CreateBlog = () => {
     if (!user) return;
 
     try {
-      await createBlogMutation.mutateAsync(formData);
-      navigate('/');
+      if (isEditing && id) {
+        await updateBlogMutation.mutateAsync({ id, ...formData });
+      } else {
+        await createBlogMutation.mutateAsync(formData);
+      }
+      navigate('/dashboard');
     } catch (error) {
-      console.error('Error creating blog:', error);
+      console.error('Error saving blog:', error);
     }
   };
 
   if (!user) {
     return null;
+  }
+
+  if (isEditing && blogLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -98,10 +129,10 @@ const CreateBlog = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              Share Your Placement Experience
+              {isEditing ? 'Edit Your Experience' : 'Share Your Placement Experience'}
             </CardTitle>
             <p className="text-gray-600">
-              Help your juniors by sharing your interview journey, tips, and insights.
+              {isEditing ? 'Update your interview journey, tips, and insights.' : 'Help your juniors by sharing your interview journey, tips, and insights.'}
             </p>
           </CardHeader>
           
@@ -141,7 +172,7 @@ const CreateBlog = () => {
                   <Label htmlFor="role" className="text-sm font-medium">
                     Role *
                   </Label>
-                  <Select onValueChange={(value) => handleInputChange('role', value)}>
+                  <Select onValueChange={(value) => handleInputChange('role', value)} value={formData.role}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
@@ -249,14 +280,17 @@ const CreateBlog = () => {
                 <Button
                   type="submit"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex-1"
-                  disabled={createBlogMutation.isPending}
+                  disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
                 >
-                  {createBlogMutation.isPending ? 'Publishing...' : 'Publish Experience'}
+                  {createBlogMutation.isPending || updateBlogMutation.isPending 
+                    ? (isEditing ? 'Updating...' : 'Publishing...') 
+                    : (isEditing ? 'Update Experience' : 'Publish Experience')
+                  }
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/dashboard')}
                 >
                   Cancel
                 </Button>
