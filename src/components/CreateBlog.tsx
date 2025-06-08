@@ -115,34 +115,34 @@ const CreateBlog = () => {
 
   if (isEditing && blogLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-900">
+        <Card className="border border-border shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-border">
+            <CardTitle className="text-2xl font-bold text-foreground">
               {isEditing ? 'Edit Your Experience' : 'Share Your Placement Experience'}
             </CardTitle>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               {isEditing ? 'Update your interview journey, tips, and insights.' : 'Help your juniors by sharing your interview journey, tips, and insights.'}
             </p>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-sm font-medium">
+                <Label htmlFor="title" className="text-sm font-medium text-foreground">
                   Title *
                 </Label>
                 <Input
@@ -151,14 +151,14 @@ const CreateBlog = () => {
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
                   required
-                  className="text-base"
+                  className="text-base border-input"
                 />
               </div>
 
               {/* Company and Role */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="company" className="text-sm font-medium">
+                  <Label htmlFor="company" className="text-sm font-medium text-foreground">
                     Company *
                   </Label>
                   <Input
@@ -167,18 +167,19 @@ const CreateBlog = () => {
                     value={formData.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
                     required
+                    className="border-input"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-medium">
+                  <Label htmlFor="role" className="text-sm font-medium text-foreground">
                     Role *
                   </Label>
                   <Select onValueChange={(value) => handleInputChange('role', value)} value={formData.role}>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-input">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-background border border-border">
                       {popularRoles.map((role) => (
                         <SelectItem key={role} value={role}>
                           {role}
@@ -191,7 +192,7 @@ const CreateBlog = () => {
 
               {/* Content */}
               <div className="space-y-2">
-                <Label htmlFor="content" className="text-sm font-medium">
+                <Label htmlFor="content" className="text-sm font-medium text-foreground">
                   Your Experience *
                 </Label>
                 <Textarea
@@ -201,20 +202,20 @@ const CreateBlog = () => {
                   onChange={(e) => handleInputChange('content', e.target.value)}
                   rows={15}
                   required
-                  className="resize-none text-base leading-relaxed"
+                  className="resize-none text-base leading-relaxed border-input"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Tip: Use line breaks to organize your content into sections
                 </p>
               </div>
 
               {/* Tags */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Tags</Label>
+                <Label className="text-sm font-medium text-foreground">Tags</Label>
                 
                 {/* Popular Tags */}
                 <div className="space-y-2">
-                  <p className="text-xs text-gray-600">Popular tags:</p>
+                  <p className="text-xs text-muted-foreground">Popular tags:</p>
                   <div className="flex flex-wrap gap-2">
                     {popularTags.map((tag) => (
                       <Button
@@ -222,7 +223,7 @@ const CreateBlog = () => {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className={`text-xs ${formData.tags.includes(tag) ? 'bg-blue-100 border-blue-300' : ''}`}
+                        className={`text-xs ${formData.tags.includes(tag) ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-input'}`}
                         onClick={() => addTag(tag)}
                       >
                         <Plus className="w-3 h-3 mr-1" />
@@ -244,12 +245,13 @@ const CreateBlog = () => {
                         addTag(newTag);
                       }
                     }}
-                    className="flex-1"
+                    className="flex-1 border-input"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => addTag(newTag)}
+                    className="border-input"
                   >
                     Add
                   </Button>
@@ -258,15 +260,15 @@ const CreateBlog = () => {
                 {/* Selected Tags */}
                 {formData.tags.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs text-gray-600">Selected tags:</p>
+                    <p className="text-xs text-muted-foreground">Selected tags:</p>
                     <div className="flex flex-wrap gap-2">
                       {formData.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                        <Badge key={tag} variant="secondary" className="flex items-center gap-1 bg-secondary text-secondary-foreground">
                           {tag}
                           <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="ml-1 text-gray-500 hover:text-gray-700"
+                            className="ml-1 text-muted-foreground hover:text-foreground"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -281,7 +283,7 @@ const CreateBlog = () => {
               <div className="flex gap-3 pt-4">
                 <Button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex-1"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white flex-1 font-medium"
                   disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
                 >
                   {createBlogMutation.isPending || updateBlogMutation.isPending 
@@ -293,6 +295,7 @@ const CreateBlog = () => {
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/dashboard')}
+                  className="border-input"
                 >
                   Cancel
                 </Button>
