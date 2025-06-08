@@ -13,7 +13,8 @@ import {
   MessageCircle, 
   Calendar,
   Edit,
-  Trash2
+  Trash2,
+  Home
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,13 +49,22 @@ const UserDashboard = () => {
 
   const userStats = {
     postsCount: userPosts?.length || 0,
-    totalViews: userPosts?.reduce((sum, post) => sum + (post.views || 0), 0) || 0,
     totalLikes: userPosts?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0,
     totalComments: userPosts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0,
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Navigation Header */}
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
+          <Home className="w-5 h-5" />
+          <span className="font-medium">Back to Home</span>
+        </Link>
+        <h1 className="text-3xl font-bold text-gray-900">My Dashboard</h1>
+        <div></div> {/* Spacer for center alignment */}
+      </div>
+
       {/* Profile Header */}
       <Card className="mb-8">
         <CardContent className="pt-6">
@@ -67,28 +77,20 @@ const UserDashboard = () => {
             </Avatar>
             
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {user?.user_metadata?.name || user?.email}
-              </h1>
+              </h2>
               <p className="text-gray-600 mb-4">
                 Sharing placement experiences to help peers succeed
               </p>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-1">
                     <FileText className="w-5 h-5 text-blue-600 mr-1" />
                     <span className="text-2xl font-bold text-gray-900">{userStats.postsCount}</span>
                   </div>
                   <p className="text-sm text-gray-600">Posts</p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    <Eye className="w-5 h-5 text-green-600 mr-1" />
-                    <span className="text-2xl font-bold text-gray-900">{userStats.totalViews}</span>
-                  </div>
-                  <p className="text-sm text-gray-600">Views</p>
                 </div>
                 
                 <div className="text-center">
@@ -175,8 +177,10 @@ const UserDashboard = () => {
                         variant="outline" 
                         size="sm"
                         onClick={() => handleEdit(post.id)}
+                        className="text-blue-600 hover:text-blue-700"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
                       </Button>
                       <Button 
                         variant="outline" 
@@ -188,7 +192,10 @@ const UserDashboard = () => {
                         {deletePost.isPending ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          <Trash2 className="w-4 h-4" />
+                          <>
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Delete
+                          </>
                         )}
                       </Button>
                     </div>
