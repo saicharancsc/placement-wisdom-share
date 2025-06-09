@@ -42,8 +42,8 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
             <span className="text-xl font-bold text-foreground">PlacementWise</span>
           </Link>
 
-          {/* Search Bar */}
-          {onSearchChange && (
+          {/* Search Bar - Only show for authenticated users */}
+          {user && onSearchChange && (
             <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />

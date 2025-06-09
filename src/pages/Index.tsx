@@ -5,9 +5,13 @@ import BlogCard from '../components/BlogCard';
 import HeroSection from '../components/HeroSection';
 import { useBlogs } from '@/hooks/useBlogs';
 import { useSearch } from '@/hooks/useSearch';
+import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
+  const { user, loading: authLoading } = useAuth();
   const { data: blogs, isLoading: blogsLoading, error: blogsError } = useBlogs();
   const { searchQuery, setSearchQuery, searchResults, isSearching, hasSearchQuery } = useSearch();
 
@@ -15,6 +19,50 @@ const Index = () => {
   const displayBlogs = hasSearchQuery ? searchResults : blogs;
   const isLoading = hasSearchQuery ? isSearching : blogsLoading;
   const error = blogsError;
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  // Show sign-in prompt if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <HeroSection />
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+          <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Sign In Required
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Please sign in to your account to view and share placement experiences.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <Link to="/login">
+                <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button variant="outline" className="font-medium">
+                  Create Account
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading && !hasSearchQuery) {
     return (
