@@ -14,7 +14,8 @@ import {
   Calendar,
   Edit,
   Trash2,
-  Home
+  Home,
+  User
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -53,6 +54,18 @@ const UserDashboard = () => {
     totalComments: userPosts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0,
   };
 
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    const name = user?.user_metadata?.name || user?.email;
+    if (!name) return 'U';
+    
+    const words = name.split(' ');
+    if (words.length >= 2) {
+      return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Navigation Header */}
@@ -66,56 +79,79 @@ const UserDashboard = () => {
       </div>
 
       {/* Profile Header */}
-      <Card className="mb-8">
-        <CardContent className="pt-6">
-          <div className="flex items-start space-x-6">
-            <Avatar className="w-24 h-24">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback className="text-2xl">
-                {user?.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+      <Card className="mb-8 overflow-hidden shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <CardContent className="pt-8 pb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
+                <Avatar className="w-32 h-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
+                  <AvatarImage 
+                    src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${getUserInitials()}&backgroundColor=3b82f6&textColor=ffffff`}
+                    alt="Profile picture"
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+              </div>
+              <Button variant="outline" size="sm" className="text-xs">
+                <User className="w-3 h-3 mr-1" />
+                Edit Profile
+              </Button>
+            </div>
             
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {user?.user_metadata?.name || user?.email}
+            {/* Profile Info */}
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                {user?.user_metadata?.name || 'Student'}
               </h2>
-              <p className="text-gray-600 mb-4">
-                Sharing placement experiences to help peers succeed
+              <p className="text-lg text-gray-600 mb-1">
+                {user?.email}
+              </p>
+              <p className="text-gray-500 mb-6 max-w-md">
+                Sharing placement experiences to help peers succeed in their career journey
               </p>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-1">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-6 max-w-md mx-auto md:mx-0">
+                <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-center mb-2">
                     <FileText className="w-5 h-5 text-blue-600 mr-1" />
                     <span className="text-2xl font-bold text-gray-900">{userStats.postsCount}</span>
                   </div>
-                  <p className="text-sm text-gray-600">Posts</p>
+                  <p className="text-sm text-gray-600 font-medium">Posts</p>
                 </div>
                 
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-1">
-                    <Heart className="w-5 h-5 text-red-600 mr-1" />
+                <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-center mb-2">
+                    <Heart className="w-5 h-5 text-red-500 mr-1" />
                     <span className="text-2xl font-bold text-gray-900">{userStats.totalLikes}</span>
                   </div>
-                  <p className="text-sm text-gray-600">Likes</p>
+                  <p className="text-sm text-gray-600 font-medium">Likes</p>
                 </div>
                 
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-1">
+                <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-center mb-2">
                     <MessageCircle className="w-5 h-5 text-purple-600 mr-1" />
                     <span className="text-2xl font-bold text-gray-900">{userStats.totalComments}</span>
                   </div>
-                  <p className="text-sm text-gray-600">Comments</p>
+                  <p className="text-sm text-gray-600 font-medium">Comments</p>
                 </div>
               </div>
             </div>
             
-            <Link to="/create">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                Write New Post
-              </Button>
-            </Link>
+            {/* Action Button */}
+            <div className="flex flex-col space-y-3">
+              <Link to="/create">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Write New Post
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
