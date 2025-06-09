@@ -8,7 +8,6 @@ export interface Blog {
   title: string;
   content: string;
   company: string;
-  college?: string;
   role: string;
   tags: string[];
   author_id: string;
@@ -88,7 +87,6 @@ export const useCreateBlog = () => {
       title: string;
       content: string;
       company: string;
-      college: string;
       role: string;
       tags: string[];
     }) => {
