@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart } from 'lucide-react';
+import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -62,6 +62,13 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
+                <Link to="/">
+                  <Button variant="ghost" className="flex items-center">
+                    <Home className="w-4 h-4 mr-2" />
+                    Home
+                  </Button>
+                </Link>
+                
                 <Link to="/create">
                   <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
                     <PlusCircle className="w-4 h-4 mr-2" />
@@ -107,18 +114,26 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                 </DropdownMenu>
               </>
             ) : (
-              <div className="flex space-x-3">
-                <Link to="/login">
-                  <Button variant="outline" className="font-medium">
-                    Login
+              <>
+                <Link to="/">
+                  <Button variant="ghost" className="flex items-center">
+                    <Home className="w-4 h-4 mr-2" />
+                    Home
                   </Button>
                 </Link>
-                <Link to="/signup">
-                  <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
+                <div className="flex space-x-3">
+                  <Link to="/login">
+                    <Button variant="outline" className="font-medium">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>

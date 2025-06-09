@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import BlogCard from '../components/BlogCard';
 import { Bookmark } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -42,16 +43,16 @@ const Bookmarks = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <Bookmark className="w-8 h-8 text-blue-500 fill-current" />
-            <h1 className="text-3xl font-bold text-gray-900">Bookmarks</h1>
+            <h1 className="text-3xl font-bold text-foreground">Bookmarks</h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Your saved posts for quick reference and future reading.
           </p>
         </div>
@@ -63,15 +64,17 @@ const Bookmarks = () => {
             ))
           ) : (
             <div className="text-center py-12">
-              <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No bookmarks yet</h3>
-              <p className="text-gray-600">
+              <Bookmark className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No bookmarks yet</h3>
+              <p className="text-muted-foreground">
                 Start bookmarking posts to save them for later!
               </p>
             </div>
           )}
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

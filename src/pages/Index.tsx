@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import BlogCard from '../components/BlogCard';
 import HeroSection from '../components/HeroSection';
 import { useBlogs } from '@/hooks/useBlogs';
@@ -23,11 +24,12 @@ const Index = () => {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex-1 flex items-center justify-center min-h-[400px]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
+        <Footer />
       </div>
     );
   }
@@ -35,10 +37,10 @@ const Index = () => {
   // Show sign-in prompt if not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation />
         <HeroSection />
-        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <div className="flex-1 max-w-4xl mx-auto px-4 py-12 text-center">
           <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Sign In Required
@@ -60,43 +62,46 @@ const Index = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (isLoading && !hasSearchQuery) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex-1 flex items-center justify-center min-h-[400px]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="flex-1 max-w-4xl mx-auto px-4 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-foreground mb-4">Error loading posts</h2>
             <p className="text-muted-foreground">Please try again later.</p>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       
       {/* Show hero section only when not searching */}
       {!hasSearchQuery && <HeroSection />}
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           {hasSearchQuery ? (
             <div>
@@ -150,6 +155,8 @@ const Index = () => {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };
