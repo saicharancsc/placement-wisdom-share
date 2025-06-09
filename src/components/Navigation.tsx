@@ -42,14 +42,14 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
             <span className="text-xl font-bold text-foreground">PlacementWise</span>
           </Link>
 
-          {/* Search Bar */}
-          {onSearchChange && (
+          {/* Search Bar - Only show if user is logged in and onSearchChange is provided */}
+          {user && onSearchChange && (
             <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search by company, role, or skills..."
+                  placeholder="Search by company, college, role, or skills..."
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-input rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"

@@ -25,6 +25,7 @@ const CreateBlog = () => {
   const [formData, setFormData] = React.useState({
     title: '',
     company: '',
+    college: '',
     role: '',
     content: '',
     tags: [] as string[]
@@ -44,6 +45,7 @@ const CreateBlog = () => {
       setFormData({
         title: existingBlog.title,
         company: existingBlog.company,
+        college: existingBlog.college || '',
         role: existingBlog.role,
         content: existingBlog.content,
         tags: existingBlog.tags || []
@@ -155,8 +157,8 @@ const CreateBlog = () => {
                 />
               </div>
 
-              {/* Company and Role */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Company, College and Role */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="company" className="text-sm font-medium text-foreground">
                     Company *
@@ -166,6 +168,20 @@ const CreateBlog = () => {
                     placeholder="e.g., Google, Microsoft, Amazon"
                     value={formData.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
+                    required
+                    className="border-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="college" className="text-sm font-medium text-foreground">
+                    College *
+                  </Label>
+                  <Input
+                    id="college"
+                    placeholder="e.g., IIT Delhi, BITS Pilani, NIT Trichy"
+                    value={formData.college}
+                    onChange={(e) => handleInputChange('college', e.target.value)}
                     required
                     className="border-input"
                   />
