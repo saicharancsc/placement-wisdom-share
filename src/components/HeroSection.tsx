@@ -8,6 +8,13 @@ import { useAuth } from '@/hooks/useAuth';
 const HeroSection = () => {
   const { user } = useAuth();
 
+  const scrollToExperiences = () => {
+    const experiencesSection = document.getElementById('experiences');
+    if (experiencesSection) {
+      experiencesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="relative overflow-hidden">
       {/* Main Hero Section */}
@@ -38,11 +45,13 @@ const HeroSection = () => {
                   </Button>
                 </Link>
               )}
-              <Link to="#experiences">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
-                  Browse Experiences
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                onClick={scrollToExperiences}
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
+              >
+                Browse Experiences
+              </Button>
             </div>
           </div>
         </div>
