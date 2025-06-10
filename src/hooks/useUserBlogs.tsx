@@ -74,6 +74,7 @@ export const useUpdateBlog = () => {
       title: string;
       content: string;
       company: string;
+      college: string;
       role: string;
       tags: string[];
     }) => {

@@ -32,7 +32,7 @@ export const useSearch = () => {
           likes_count:likes(count),
           comments_count:comments(count)
         `)
-        .or(`title.ilike.%${debouncedQuery}%,company.ilike.%${debouncedQuery}%,role.ilike.%${debouncedQuery}%,content.ilike.%${debouncedQuery}%`)
+        .or(`title.ilike.%${debouncedQuery}%,company.ilike.%${debouncedQuery}%,college.ilike.%${debouncedQuery}%,role.ilike.%${debouncedQuery}%,content.ilike.%${debouncedQuery}%`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
