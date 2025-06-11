@@ -56,6 +56,35 @@ export type Database = {
           },
         ]
       }
+      bookmarks: {
+        Row: {
+          blog_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           author_id: string | null

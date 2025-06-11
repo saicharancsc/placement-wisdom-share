@@ -11,6 +11,7 @@ import { useBlog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
 import { useComments, useCreateComment } from '@/hooks/useComments';
+import { useCheckBookmarkStatus, useToggleBookmark } from '@/hooks/useBookmarks';
 import Navigation from './Navigation';
 
 const BlogPost = () => {
@@ -19,18 +20,18 @@ const BlogPost = () => {
   const { user } = useAuth();
   const { data: blogPost, isLoading, error } = useBlog(id || '');
   const { data: comments, isLoading: commentsLoading } = useComments(id || '');
+  const { data: isBookmarked = false } = useCheckBookmarkStatus(id || '');
   const likeMutation = useLikeBlog();
+  const bookmarkMutation = useToggleBookmark();
   const createCommentMutation = useCreateComment();
   
   const [liked, setLiked] = React.useState(false);
-  const [bookmarked, setBookmarked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(0);
   const [comment, setComment] = React.useState('');
 
   React.useEffect(() => {
     if (blogPost) {
       setLiked(blogPost.is_liked || false);
-      setBookmarked(blogPost.is_bookmarked || false);
       setLikeCount(blogPost.likes_count || 0);
     }
   }, [blogPost]);
@@ -56,8 +57,17 @@ const BlogPost = () => {
     }
   };
 
-  const handleBookmark = () => {
-    setBookmarked(!bookmarked);
+  const handleBookmark = async () => {
+    if (!user || !blogPost) return;
+    
+    try {
+      await bookmarkMutation.mutateAsync({ 
+        blogId: blogPost.id, 
+        isBookmarked: isBookmarked 
+      });
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    }
   };
 
   const handleCommentSubmit = async () => {
@@ -138,9 +148,14 @@ const BlogPost = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleBookmark}
-                  className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
+                  disabled={bookmarkMutation.isPending || !user}
+                  className={`${isBookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
                 >
-                  <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+                  {bookmarkMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                  )}
                 </Button>
                 <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600">
                   <Share2 className="w-4 h-4" />

@@ -3,13 +3,15 @@ import React from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import BlogCard from '../components/BlogCard';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useBookmarks } from '@/hooks/useBookmarks';
 
 const Bookmarks = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { data: bookmarkedPosts, isLoading, error } = useBookmarks();
 
   React.useEffect(() => {
     if (!user) {
@@ -17,29 +19,37 @@ const Bookmarks = () => {
     }
   }, [user, navigate]);
 
-  // Mock bookmarked posts data - in real app, fetch from database
-  const bookmarkedPosts = [
-    {
-      id: "3",
-      title: "Data Science Interview at Netflix - Complete Guide",
-      company: "Netflix",
-      role: "Data Scientist",
-      author: { name: "Priya Sharma", id: "3", email: "priya@example.com" },
-      content: "Detailed walkthrough of Netflix's data science interview process including statistics questions, machine learning concepts, A/B testing scenarios, and coding challenges in Python and SQL.",
-      tags: ["Netflix", "Data Science", "Statistics", "Machine Learning", "Python", "SQL"],
-      likes: 89,
-      comments: 23,
-      createdAt: "2024-01-01T00:00:00Z",
-      is_liked: false,
-      is_bookmarked: true,
-      author_id: "3",
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z"
-    }
-  ];
-
   if (!user) {
     return null;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navigation />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navigation />
+        <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-foreground mb-2">Error loading bookmarks</h3>
+            <p className="text-muted-foreground">
+              Please try again later.
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   return (
@@ -58,7 +68,7 @@ const Bookmarks = () => {
         </div>
 
         <div className="space-y-6">
-          {bookmarkedPosts.length > 0 ? (
+          {bookmarkedPosts && bookmarkedPosts.length > 0 ? (
             bookmarkedPosts.map((post) => (
               <BlogCard key={post.id} {...post} />
             ))
