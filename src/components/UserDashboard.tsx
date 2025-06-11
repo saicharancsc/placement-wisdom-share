@@ -15,16 +15,21 @@ import {
   Edit,
   Trash2,
   Home,
-  User
+  User,
+  MapPin,
+  Globe
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserBlogs, useDeleteBlog } from '@/hooks/useUserBlogs';
+import { useProfile } from '@/hooks/useProfile';
 import { Loader2 } from 'lucide-react';
+import EditProfileDialog from './EditProfileDialog';
 
 const UserDashboard = () => {
   const { user } = useAuth();
   const { data: userPosts, isLoading } = useUserBlogs();
+  const { data: profile } = useProfile();
   const deletePost = useDeleteBlog();
   const navigate = useNavigate();
 
@@ -56,7 +61,7 @@ const UserDashboard = () => {
 
   // Get user initials for avatar fallback
   const getUserInitials = () => {
-    const name = user?.user_metadata?.name || user?.email;
+    const name = profile?.name || user?.user_metadata?.name || user?.email;
     if (!name) return 'U';
     
     const words = name.split(' ');
@@ -65,6 +70,9 @@ const UserDashboard = () => {
     }
     return name.charAt(0).toUpperCase();
   };
+
+  const displayName = profile?.name || user?.user_metadata?.name || 'Student';
+  const currentAvatar = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${getUserInitials()}&backgroundColor=3b82f6&textColor=ffffff`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -87,7 +95,7 @@ const UserDashboard = () => {
               <div className="relative">
                 <Avatar className="w-32 h-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
                   <AvatarImage 
-                    src={user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${getUserInitials()}&backgroundColor=3b82f6&textColor=ffffff`}
+                    src={currentAvatar}
                     alt="Profile picture"
                     className="object-cover"
                   />
@@ -97,23 +105,52 @@ const UserDashboard = () => {
                 </Avatar>
                 <div className="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
               </div>
-              <Button variant="outline" size="sm" className="text-xs">
-                <User className="w-3 h-3 mr-1" />
-                Edit Profile
-              </Button>
+              <EditProfileDialog>
+                <Button variant="outline" size="sm" className="text-xs">
+                  <User className="w-3 h-3 mr-1" />
+                  Edit Profile
+                </Button>
+              </EditProfileDialog>
             </div>
             
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                {user?.user_metadata?.name || 'Student'}
+                {displayName}
               </h2>
               <p className="text-lg text-gray-600 mb-1">
                 {user?.email}
               </p>
-              <p className="text-gray-500 mb-6 max-w-md">
-                Sharing placement experiences to help peers succeed in their career journey
-              </p>
+              
+              {/* Additional Profile Info */}
+              <div className="space-y-1 mb-4">
+                {profile?.bio && (
+                  <p className="text-gray-500 max-w-md">
+                    {profile.bio}
+                  </p>
+                )}
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  {profile?.location && (
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {profile.location}
+                    </div>
+                  )}
+                  {profile?.website && (
+                    <div className="flex items-center">
+                      <Globe className="w-4 h-4 mr-1" />
+                      <a 
+                        href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {profile.website}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
               
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-6 max-w-md mx-auto md:mx-0">
