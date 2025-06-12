@@ -16,12 +16,14 @@ const Bookmarks = () => {
 
   if (!user) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please log in to view your bookmarks</h1>
-          <Link to="/login">
-            <Button>Sign In</Button>
-          </Link>
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4">Please log in to view your bookmarks</h1>
+            <Link to="/login">
+              <Button>Sign In</Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -29,9 +31,11 @@ const Bookmarks = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
         </div>
       </div>
     );
@@ -50,107 +54,121 @@ const Bookmarks = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Navigation Header */}
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
-          <Home className="w-5 h-5" />
-          <span className="font-medium">Back to Home</span>
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-900">My Bookmarks</h1>
-        <div></div>
-      </div>
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Navigation Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors w-fit">
+            <Home className="w-5 h-5" />
+            <span className="font-medium">Back to Home</span>
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">My Bookmarks</h1>
+          <div className="hidden sm:block"></div>
+        </div>
 
-      {bookmarks && bookmarks.length > 0 ? (
-        <div className="space-y-6">
-          {bookmarks.map((bookmark) => (
-            <Card key={bookmark.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>{bookmark.blog.author?.name?.charAt(0) || 'U'}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-gray-900">{bookmark.blog.author?.name || 'Anonymous'}</p>
-                      <div className="flex items-center space-x-2 text-sm text-gray-500">
-                        <Calendar className="w-3 h-3" />
-                        <span>{formatDate(bookmark.blog.created_at)}</span>
+        {bookmarks && bookmarks.length > 0 ? (
+          <div className="space-y-4 sm:space-y-6">
+            {bookmarks.map((bookmark) => (
+              <Card key={bookmark.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3 p-4 sm:p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Link to={`/profile/${bookmark.author_id}`}>
+                        <Avatar className="w-8 h-8 sm:w-10 sm:h-10 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer">
+                          <AvatarImage src="/placeholder.svg" />
+                          <AvatarFallback className="text-xs sm:text-sm">
+                            {bookmark.author?.name?.charAt(0) || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      <div className="min-w-0 flex-1">
+                        <Link to={`/profile/${bookmark.author_id}`}>
+                          <p className="font-medium text-foreground hover:text-primary transition-colors cursor-pointer text-sm sm:text-base truncate">
+                            {bookmark.author?.name || 'Anonymous'}
+                          </p>
+                        </Link>
+                        <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                          <Calendar className="w-3 h-3" />
+                          <span>{formatDate(bookmark.created_at)}</span>
+                        </div>
                       </div>
                     </div>
+                    <BookmarkIcon className="w-4 h-4 text-primary fill-current flex-shrink-0" />
                   </div>
-                  <BookmarkIcon className="w-4 h-4 text-blue-600 fill-current" />
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Building2 className="w-4 h-4 text-gray-500" />
-                    <span className="font-semibold text-gray-900">{bookmark.blog.company}</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                      {bookmark.blog.role}
-                    </Badge>
-                  </div>
-                  
-                  <Link to={`/blog/${bookmark.blog.id}`}>
-                    <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
-                      {bookmark.blog.title}
-                    </h3>
-                  </Link>
-                  
-                  <p className="text-gray-600 line-clamp-3 leading-relaxed">
-                    {bookmark.blog.content.substring(0, 200)}...
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {bookmark.blog.tags?.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
+                </CardHeader>
+                
+                <CardContent className="pt-0 p-4 sm:p-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2 flex-wrap gap-2">
+                      <div className="flex items-center space-x-2 min-w-0">
+                        <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="font-semibold text-foreground text-sm sm:text-base truncate">
+                          {bookmark.company}
+                        </span>
+                      </div>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary text-xs sm:text-sm flex-shrink-0">
+                        {bookmark.role}
                       </Badge>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center text-gray-500">
-                        <Heart className="w-4 h-4 mr-1" />
-                        {bookmark.blog.likes_count || 0}
-                      </div>
-                      <div className="flex items-center text-gray-500">
-                        <MessageCircle className="w-4 h-4 mr-1" />
-                        {bookmark.blog.comments_count || 0}
-                      </div>
                     </div>
                     
-                    <Link to={`/blog/${bookmark.blog.id}`}>
-                      <Button variant="outline" size="sm">
-                        Read More
-                      </Button>
+                    <Link to={`/blog/${bookmark.id}`}>
+                      <h3 className="text-base sm:text-lg font-semibold text-foreground hover:text-primary transition-colors line-clamp-2 leading-tight">
+                        {bookmark.title}
+                      </h3>
                     </Link>
+                    
+                    <p className="text-muted-foreground line-clamp-3 leading-relaxed text-sm sm:text-base">
+                      {bookmark.content.substring(0, 200)}...
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
+                      {bookmark.tags?.map((tag, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center text-muted-foreground text-sm">
+                          <Heart className="w-4 h-4 mr-1" />
+                          {bookmark.likes_count || 0}
+                        </div>
+                        <div className="flex items-center text-muted-foreground text-sm">
+                          <MessageCircle className="w-4 h-4 mr-1" />
+                          {bookmark.comments_count || 0}
+                        </div>
+                      </div>
+                      
+                      <Link to={`/blog/${bookmark.id}`} className="w-full sm:w-auto">
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                          Read More
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <BookmarkIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No bookmarks yet
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Start bookmarking posts you want to read later!
-          </p>
-          <Link to="/">
-            <Button>
-              Explore Posts
-            </Button>
-          </Link>
-        </div>
-      )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <BookmarkIcon className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">
+              No bookmarks yet
+            </h3>
+            <p className="text-muted-foreground mb-4 text-sm sm:text-base px-4">
+              Start bookmarking posts you want to read later!
+            </p>
+            <Link to="/">
+              <Button className="w-full sm:w-auto">
+                Explore Posts
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
