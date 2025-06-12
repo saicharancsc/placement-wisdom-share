@@ -13,6 +13,7 @@ import LikedPosts from "./pages/LikedPosts";
 import BlogPost from "./components/BlogPost";
 import CreateBlog from "./components/CreateBlog";
 import UserDashboard from "./components/UserDashboard";
+import PublicUserProfile from "./components/PublicUserProfile";
 import Bookmarks from "./pages/Bookmarks";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/create" element={<CreateBlog />} />
             <Route path="/edit/:id" element={<CreateBlog />} />
             <Route path="/dashboard" element={<UserDashboard />} />
+            <Route path="/profile/:userId" element={<PublicUserProfile />} />
             <Route path="/liked" element={<LikedPosts />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="*" element={<NotFound />} />
