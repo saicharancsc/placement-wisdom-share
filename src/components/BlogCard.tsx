@@ -126,30 +126,30 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const avatarFallback = displayName.charAt(0).toUpperCase();
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200">
+    <Card className="group hover:shadow-xl transition-all duration-300 border border-lavender-200/50 bg-white/80 backdrop-blur-sm hover:border-lavender-300 rounded-2xl overflow-hidden">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${author_id}`}>
-              <Avatar className="w-10 h-10 hover:ring-2 hover:ring-blue-200 transition-all cursor-pointer">
+              <Avatar className="w-12 h-12 hover:ring-2 hover:ring-lavender-300 transition-all cursor-pointer shadow-md">
                 {avatarUrl ? (
                   <AvatarImage 
                     src={avatarUrl} 
                     alt={`${displayName}'s avatar`}
                   />
                 ) : null}
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                <AvatarFallback className="bg-gradient-to-br from-lavender-400 to-blush-400 text-white font-semibold">
                   {avatarFallback}
                 </AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link to={`/profile/${author_id}`}>
-                <p className="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer">
+                <p className="font-medium text-midnight-700 hover:text-lavender-600 transition-colors cursor-pointer">
                   {displayName}
                 </p>
               </Link>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-2 text-sm text-midnight-500">
                 <Calendar className="w-3 h-3" />
                 <span>{formatDate(createdAt)}</span>
               </div>
@@ -160,7 +160,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
             size="sm"
             onClick={handleBookmark}
             disabled={bookmarkMutation.isPending || !user}
-            className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
+            className={`${bookmarked ? 'text-lavender-600' : 'text-midnight-400'} hover:text-lavender-600 hover:bg-lavender-50 rounded-xl`}
           >
             <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
           </Button>
@@ -168,28 +168,28 @@ const BlogCard: React.FC<BlogCardProps> = ({
       </CardHeader>
       
       <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Building2 className="w-4 h-4 text-gray-500" />
-            <span className="font-semibold text-gray-900">{company}</span>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <Building2 className="w-4 h-4 text-midnight-500" />
+            <span className="font-semibold text-midnight-700">{company}</span>
+            <Badge variant="secondary" className="bg-gradient-to-r from-lavender-100 to-blush-100 text-lavender-700 border-lavender-200 rounded-full">
               {role}
             </Badge>
           </div>
           
           <Link to={`/blog/${id}`}>
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+            <h3 className="text-lg font-semibold text-midnight-700 group-hover:text-lavender-600 transition-colors line-clamp-2">
               {title}
             </h3>
           </Link>
           
-          <p className="text-gray-600 line-clamp-3 leading-relaxed">
+          <p className="text-midnight-600 line-clamp-3 leading-relaxed">
             {content.substring(0, 200)}...
           </p>
           
           <div className="flex flex-wrap gap-2">
             {tags?.map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge key={index} variant="outline" className="text-xs bg-teal-50 text-teal-600 border-teal-200 rounded-full">
                 {tag}
               </Badge>
             ))}
@@ -202,19 +202,19 @@ const BlogCard: React.FC<BlogCardProps> = ({
                 size="sm"
                 onClick={handleLike}
                 disabled={likeMutation.isPending || !user}
-                className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
+                className={`${liked ? 'text-red-500' : 'text-midnight-500'} hover:text-red-500 hover:bg-red-50 rounded-xl`}
               >
                 <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
                 {likeCount}
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
+              <Button variant="ghost" size="sm" className="text-midnight-500 hover:text-lavender-500 hover:bg-lavender-50 rounded-xl">
                 <MessageCircle className="w-4 h-4 mr-1" />
                 {comments}
               </Button>
             </div>
             
             <Link to={`/blog/${id}`}>
-              <Button variant="outline" size="sm" className="group-hover:bg-blue-50 group-hover:border-blue-200">
+              <Button variant="outline" size="sm" className="group-hover:bg-lavender-50 group-hover:border-lavender-300 group-hover:text-lavender-600 rounded-xl border-lavender-200 transition-all duration-200">
                 Read More
               </Button>
             </Link>
