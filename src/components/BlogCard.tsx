@@ -126,12 +126,12 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const avatarFallback = displayName.charAt(0).toUpperCase();
 
   return (
-    <Card className="group hover:shadow-xl transition-all duration-300 border border-gray-200/50 hover:border-blue-300/50 backdrop-blur-sm bg-white/90 hover:bg-white rounded-2xl overflow-hidden hover:-translate-y-1">
+    <Card className="group hover:shadow-xl transition-all duration-200 border border-gray-200/50 hover:border-blue-300/50 backdrop-blur-sm bg-white/90 hover:bg-white rounded-2xl overflow-hidden hover:-translate-y-1 animate-fade-in">
       <CardHeader className="pb-3 bg-gradient-to-r from-blue-50/50 to-purple-50/50">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${author_id}`}>
-              <Avatar className="w-10 h-10 hover:ring-4 hover:ring-blue-200/50 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl">
+              <Avatar className="w-10 h-10 hover:ring-4 hover:ring-blue-200/50 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl">
                 {avatarUrl ? (
                   <AvatarImage 
                     src={avatarUrl} 
@@ -160,9 +160,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
             size="sm"
             onClick={handleBookmark}
             disabled={bookmarkMutation.isPending || !user}
-            className={`${bookmarke ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'} transition-all duration-300 rounded-xl`}
+            className={`${bookmarked ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'} transition-all duration-200 rounded-xl`}
           >
-            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''} transition-all duration-300`} />
+            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''} transition-all duration-200`} />
           </Button>
         </div>
       </CardHeader>
@@ -178,7 +178,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
           </div>
           
           <Link to={`/blog/${id}`}>
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-all duration-300 line-clamp-2">
+            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-all duration-200 line-clamp-2">
               {title}
             </h3>
           </Link>
@@ -192,7 +192,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
               <Badge 
                 key={index} 
                 variant="outline" 
-                className="text-xs rounded-full hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                className="text-xs rounded-full hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
               >
                 {tag}
               </Badge>
@@ -206,19 +206,19 @@ const BlogCard: React.FC<BlogCardProps> = ({
                 size="sm"
                 onClick={handleLike}
                 disabled={likeMutation.isPending || !user}
-                className={`${liked ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-red-500 hover:bg-red-50'} transition-all duration-300 rounded-xl`}
+                className={`${liked ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-red-500 hover:bg-red-50'} transition-all duration-200 rounded-xl`}
               >
-                <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''} transition-all duration-300`} />
+                <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''} transition-all duration-200`} />
                 {likeCount}
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all duration-300 rounded-xl">
+              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 rounded-xl">
                 <MessageCircle className="w-4 h-4 mr-1" />
                 {comments}
               </Button>
             </div>
             
             <Link to={`/blog/${id}`}>
-              <Button variant="outline" size="sm" className="group-hover:bg-gradient-to-r group-hover:from-blue-50 group-hover:to-purple-50 group-hover:border-blue-300 transition-all duration-300 rounded-xl shadow-md hover:shadow-lg">
+              <Button variant="outline" size="sm" className="group-hover:bg-gradient-to-r group-hover:from-blue-50 group-hover:to-purple-50 group-hover:border-blue-300 transition-all duration-200 rounded-xl shadow-md hover:shadow-lg">
                 Read More
               </Button>
             </Link>
