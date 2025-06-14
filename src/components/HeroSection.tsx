@@ -32,14 +32,14 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {user ? (
                 <Link to="/create">
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg">
+                  <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
                     Share Your Experience
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               ) : (
                 <Link to="/signup">
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg">
+                  <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
                     Get Started
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
