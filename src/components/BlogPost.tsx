@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { Heart, MessageCircle, Bookmark, Calendar, Building2, Share2, Loader2 } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Calendar, Building2, Share2, Loader2, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBlog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
@@ -127,6 +126,18 @@ const BlogPost = () => {
       <Navigation />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Back Navigation */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 p-0"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </Button>
+        </div>
+
         <Card className="mb-8">
           <CardHeader className="pb-6">
             <div className="flex items-center justify-between mb-4">
