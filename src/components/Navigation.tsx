@@ -78,10 +78,10 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Button variant="outline" className="relative h-10 w-10 rounded-full border-2 border-blue-600 bg-white hover:bg-blue-50">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder.svg" alt="Profile" />
-                        <AvatarFallback className="bg-primary text-primary-foreground">
+                        <AvatarFallback className="bg-blue-600 text-white font-semibold">
                           {user.email?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
