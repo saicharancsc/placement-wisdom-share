@@ -33,11 +33,18 @@ const BlogCard: React.FC<BlogCardProps> = ({
   is_bookmarked = false,
 }) => {
   const { user } = useAuth();
-  const { data: authorProfile } = usePublicProfile(author_id);
+  const { data: authorProfile, isLoading: profileLoading } = usePublicProfile(author_id);
   const likeMutation = useLikeBlog();
   const [liked, setLiked] = React.useState(is_liked);
   const [bookmarked, setBookmarked] = React.useState(is_bookmarked);
   const [likeCount, setLikeCount] = React.useState(likes);
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('BlogCard - author_id:', author_id);
+    console.log('BlogCard - authorProfile:', authorProfile);
+    console.log('BlogCard - profileLoading:', profileLoading);
+  }, [author_id, authorProfile, profileLoading]);
 
   const handleLike = async () => {
     if (!user) return;
@@ -71,6 +78,11 @@ const BlogCard: React.FC<BlogCardProps> = ({
     return `${Math.ceil(diffDays / 30)} months ago`;
   };
 
+  // Get display name and avatar with proper fallbacks
+  const displayName = authorProfile?.name || author?.name || 'Anonymous';
+  const avatarUrl = authorProfile?.avatar_url;
+  const avatarFallback = displayName.charAt(0).toUpperCase();
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200">
       <CardHeader className="pb-3">
@@ -78,19 +90,23 @@ const BlogCard: React.FC<BlogCardProps> = ({
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${author_id}`}>
               <Avatar className="w-10 h-10 hover:ring-2 hover:ring-blue-200 transition-all cursor-pointer">
-                <AvatarImage 
-                  src={authorProfile?.avatar_url || "/placeholder.svg"} 
-                  alt={author?.name || 'User avatar'}
-                />
+                {avatarUrl ? (
+                  <AvatarImage 
+                    src={avatarUrl} 
+                    alt={`${displayName}'s avatar`}
+                    onLoad={() => console.log('Avatar loaded successfully')}
+                    onError={(e) => console.log('Avatar failed to load:', e)}
+                  />
+                ) : null}
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                  {(authorProfile?.name || author?.name || 'U').charAt(0).toUpperCase()}
+                  {avatarFallback}
                 </AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link to={`/profile/${author_id}`}>
                 <p className="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer">
-                  {authorProfile?.name || author?.name || 'Anonymous'}
+                  {displayName}
                 </p>
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
