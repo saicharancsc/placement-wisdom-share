@@ -15,33 +15,24 @@ import {
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { usePublicProfile, usePublicUserBlogs } from '@/hooks/usePublicProfile';
-import { Loader2 } from 'lucide-react';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorState from './ErrorState';
 
 const PublicUserProfile = () => {
   const { userId } = useParams<{ userId: string }>();
-  const { data: profile, isLoading: profileLoading } = usePublicProfile(userId || '');
+  const { data: profile, isLoading: profileLoading, error: profileError } = usePublicProfile(userId || '');
   const { data: userPosts, isLoading: postsLoading } = usePublicUserBlogs(userId || '');
 
   if (profileLoading || postsLoading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-        </div>
-      </div>
-    );
+    return <LoadingSpinner text="Loading user profile..." />;
   }
 
-  if (!profile) {
+  if (profileError || !profile) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">User not found</h1>
-          <Link to="/">
-            <Button>Back to Home</Button>
-          </Link>
-        </div>
-      </div>
+      <ErrorState 
+        title="User not found" 
+        message="This user profile doesn't exist or may have been removed." 
+      />
     );
   }
 
@@ -56,7 +47,7 @@ const PublicUserProfile = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  const displayName = profile?.name || 'Student';
+  const displayName = profile?.name || 'User';
   const currentAvatar = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${getUserInitials()}&backgroundColor=3b82f6&textColor=ffffff`;
 
   const userStats = {

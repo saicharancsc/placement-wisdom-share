@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Blog } from './useBlogs';
@@ -18,22 +19,48 @@ export const usePublicProfile = (userId: string) => {
     queryFn: async () => {
       if (!userId) return null;
       
-      const { data, error } = await supabase
+      // First try to get from profiles table
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        throw error;
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
       }
-      
-      return data as PublicProfile;
+
+      // If profile exists, return it
+      if (profileData) {
+        return profileData as PublicProfile;
+      }
+
+      // If no profile, try to get basic info from users table
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, name, email, created_at')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (userError) {
+        console.error('Error fetching user:', userError);
+        throw userError;
+      }
+
+      if (!userData) {
+        return null;
+      }
+
+      // Return user data in profile format
+      return {
+        id: userData.id,
+        name: userData.name,
+        created_at: userData.created_at,
+      } as PublicProfile;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };
 
