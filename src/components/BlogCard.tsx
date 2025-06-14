@@ -60,6 +60,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
 
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(likes);
+  const [bookmarked, setBookmarked] = React.useState(false);
 
   React.useEffect(() => {
     setLiked(isLiked);
@@ -68,6 +69,10 @@ const BlogCard: React.FC<BlogCardProps> = ({
   React.useEffect(() => {
     setLikeCount(likes);
   }, [likes]);
+
+  React.useEffect(() => {
+    setBookmarked(isBookmarked);
+  }, [isBookmarked]);
 
   const handleLike = async () => {
     if (!user) return;
@@ -88,13 +93,18 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const handleBookmark = async () => {
     if (!user) return;
     
+    const newBookmarkedState = !bookmarked;
+    setBookmarked(newBookmarkedState);
+
     try {
       await bookmarkMutation.mutateAsync({ 
         blogId: id, 
-        isBookmarked: isBookmarked 
+        isBookmarked: bookmarked 
       });
     } catch (error) {
       console.error('Error toggling bookmark:', error);
+      // Revert on error
+      setBookmarked(bookmarked);
     }
   };
 
@@ -150,9 +160,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
             size="sm"
             onClick={handleBookmark}
             disabled={bookmarkMutation.isPending || !user}
-            className={`${isBookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
+            className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
           >
-            <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
           </Button>
         </div>
       </CardHeader>
