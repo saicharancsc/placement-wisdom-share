@@ -17,9 +17,9 @@ const BlogsHeader: React.FC<BlogsHeaderProps> = ({
 }) => {
   if (hasSearchQuery) {
     return (
-      <div className="text-center mb-4 sm:mb-6 animate-slide-in-up">
+      <div className="text-center mb-4 sm:mb-6 animate-fade-in">
         <div className="flex items-center justify-center mb-4">
-          <Search className="w-6 h-6 text-blue-500 mr-2 animate-bounce-gentle" />
+          <Search className="w-6 h-6 text-blue-500 mr-2" />
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
             Search Results for "{searchQuery}"
           </h1>
@@ -42,15 +42,15 @@ const BlogsHeader: React.FC<BlogsHeaderProps> = ({
 
   return (
     <div className="text-center mb-4 sm:mb-6">
-      <div className="animate-slide-in-up">
+      <div className="animate-fade-in">
         <div className="flex items-center justify-center mb-4">
-          <Sparkles className="w-6 h-6 text-yellow-500 mr-3 animate-bounce-gentle" />
+          <Sparkles className="w-6 h-6 text-yellow-500 mr-3" />
           <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
             Latest Placement Experiences
           </h2>
-          <Sparkles className="w-6 h-6 text-yellow-500 ml-3 animate-bounce-gentle" />
+          <Sparkles className="w-6 h-6 text-yellow-500 ml-3" />
         </div>
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl px-6 py-3 inline-block shadow-lg animate-slide-in-up" style={{ animationDelay: '0.2s' }}>
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl px-6 py-3 inline-block shadow-lg">
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base font-medium">
             Discover interview experiences, tips, and insights from your peers to ace your placement season.
           </p>

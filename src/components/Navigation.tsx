@@ -35,18 +35,18 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group animate-slide-in-left">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 animate-float">
-              <BookOpen className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-300" />
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+              <BookOpen className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:to-cyan-600 transition-all duration-300">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               PlacementWise
             </span>
           </Link>
 
           {/* Search Bar - Only show for authenticated users */}
           {user && onSearchChange && (
-            <div className="flex-1 max-w-lg mx-8 animate-scale-in">
+            <div className="flex-1 max-w-lg mx-8">
               <div className="relative group">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 group-focus-within:text-blue-500 transition-colors duration-300" />
                 <input
@@ -64,24 +64,24 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/" className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+                <Link to="/">
                   <Button variant="ghost" className="flex items-center hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 rounded-xl">
                     <Home className="w-4 h-4 mr-2" />
                     Home
                   </Button>
                 </Link>
                 
-                <Link to="/create" className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-                  <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-xl">
+                <Link to="/create">
+                  <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Share Experience
                   </Button>
                 </Link>
                 
-                <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
+                <div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="relative h-10 w-10 rounded-full border-2 border-gradient-to-r from-blue-600 to-purple-600 bg-white hover:bg-blue-50 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                      <Button variant="outline" className="relative h-10 w-10 rounded-full border-2 border-gradient-to-r from-blue-600 to-purple-600 bg-white hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-300">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src="/placeholder.svg" alt="Profile" />
                           <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold">
@@ -90,7 +90,7 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl rounded-xl animate-scale-in" align="end" forceMount>
+                    <DropdownMenuContent className="w-56 bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl rounded-xl" align="end" forceMount>
                       <DropdownMenuItem asChild className="rounded-lg hover:bg-blue-50 transition-colors duration-200">
                         <Link to="/dashboard" className="flex items-center">
                           <User className="mr-2 h-4 w-4" />
@@ -119,20 +119,20 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
               </>
             ) : (
               <>
-                <Link to="/" className="animate-slide-in-right">
+                <Link to="/">
                   <Button variant="ghost" className="flex items-center hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 rounded-xl">
                     <Home className="w-4 h-4 mr-2" />
                     Home
                   </Button>
                 </Link>
                 <div className="flex space-x-3">
-                  <Link to="/login" className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+                  <Link to="/login">
                     <Button variant="outline" className="font-medium hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 rounded-xl">
                       Login
                     </Button>
                   </Link>
-                  <Link to="/signup" className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-                    <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 rounded-xl">
+                  <Link to="/signup">
+                    <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                       Sign Up
                     </Button>
                   </Link>

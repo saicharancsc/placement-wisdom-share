@@ -77,7 +77,7 @@ const Index = () => {
       
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header Section */}
-        <div className="mb-6 sm:mb-8 animate-slide-in-up">
+        <div className="mb-6 sm:mb-8 animate-fade-in">
           <BlogsHeader
             hasSearchQuery={hasSearchQuery}
             searchQuery={searchQuery}
@@ -86,7 +86,7 @@ const Index = () => {
           />
 
           {/* Controls Bar */}
-          <div className="animate-slide-in-up" style={{ animationDelay: '0.2s' }}>
+          <div>
             <BlogControlsBar
               blogCount={displayBlogs?.length || 0}
               hasSearchQuery={hasSearchQuery}
@@ -110,12 +110,8 @@ const Index = () => {
                   : 'space-y-4 sm:space-y-6'
                 }
               `}>
-                {displayBlogs.map((blog, index) => (
-                  <div 
-                    key={blog.id} 
-                    className="animate-scale-in"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
+                {displayBlogs.map((blog) => (
+                  <div key={blog.id}>
                     <BlogCard 
                       {...blog}
                       likes={blog.likes_count || 0}
@@ -135,7 +131,7 @@ const Index = () => {
 
         {/* Load More Section (for future pagination) */}
         {displayBlogs && displayBlogs.length > 0 && !hasSearchQuery && (
-          <div className="text-center mt-8 sm:mt-12 py-6 sm:py-8 animate-slide-in-up">
+          <div className="text-center mt-8 sm:mt-12 py-6 sm:py-8">
             <p className="text-muted-foreground text-xs sm:text-sm bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full inline-block">
               Showing all {displayBlogs.length} posts
             </p>
