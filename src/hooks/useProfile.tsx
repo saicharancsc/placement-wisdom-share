@@ -60,6 +60,7 @@ export const useUpdateProfile = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['public-profile'] });
       toast({
         title: "Success",
         description: "Profile updated successfully!",

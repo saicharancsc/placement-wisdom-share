@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Blog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
+import { usePublicProfile } from '@/hooks/usePublicProfile';
 
 interface BlogCardProps extends Blog {
   likes: number;
@@ -32,6 +33,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
   is_bookmarked = false,
 }) => {
   const { user } = useAuth();
+  const { data: authorProfile } = usePublicProfile(author_id);
   const likeMutation = useLikeBlog();
   const [liked, setLiked] = React.useState(is_liked);
   const [bookmarked, setBookmarked] = React.useState(is_bookmarked);
@@ -76,14 +78,19 @@ const BlogCard: React.FC<BlogCardProps> = ({
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${author_id}`}>
               <Avatar className="w-10 h-10 hover:ring-2 hover:ring-blue-200 transition-all cursor-pointer">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>{author?.name?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarImage 
+                  src={authorProfile?.avatar_url || "/placeholder.svg"} 
+                  alt={author?.name || 'User avatar'}
+                />
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                  {(authorProfile?.name || author?.name || 'U').charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link to={`/profile/${author_id}`}>
                 <p className="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer">
-                  {author?.name || 'Anonymous'}
+                  {authorProfile?.name || author?.name || 'Anonymous'}
                 </p>
               </Link>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
