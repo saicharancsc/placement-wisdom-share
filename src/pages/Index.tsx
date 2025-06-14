@@ -28,7 +28,7 @@ const Index = () => {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <LoadingSpinner />
         <Footer />
@@ -39,7 +39,7 @@ const Index = () => {
   // Show sign-in prompt if not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation />
         <HeroSection />
         <SignInPrompt />
@@ -50,7 +50,7 @@ const Index = () => {
 
   if (isLoading && !hasSearchQuery) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <LoadingSpinner />
         <Footer />
@@ -60,7 +60,7 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <ErrorState />
         <Footer />
@@ -69,7 +69,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       
       {/* Show hero section only when not searching */}
@@ -77,7 +77,7 @@ const Index = () => {
       
       <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header Section */}
-        <div className="mb-6 sm:mb-8 animate-fade-in">
+        <div className="mb-6 sm:mb-8">
           <BlogsHeader
             hasSearchQuery={hasSearchQuery}
             searchQuery={searchQuery}
@@ -86,14 +86,12 @@ const Index = () => {
           />
 
           {/* Controls Bar */}
-          <div>
-            <BlogControlsBar
-              blogCount={displayBlogs?.length || 0}
-              hasSearchQuery={hasSearchQuery}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-            />
-          </div>
+          <BlogControlsBar
+            blogCount={displayBlogs?.length || 0}
+            hasSearchQuery={hasSearchQuery}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+          />
         </div>
 
         {/* Content Section */}
@@ -106,12 +104,12 @@ const Index = () => {
             {displayBlogs && displayBlogs.length > 0 ? (
               <div className={`
                 ${viewMode === 'grid' 
-                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8' 
-                  : 'space-y-4 sm:space-y-6'
+                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6' 
+                  : 'space-y-3 sm:space-y-4'
                 }
               `}>
                 {displayBlogs.map((blog) => (
-                  <div key={blog.id}>
+                  <div key={blog.id} className="animate-fade-in">
                     <BlogCard 
                       {...blog}
                       likes={blog.likes_count || 0}
@@ -122,9 +120,7 @@ const Index = () => {
                 ))}
               </div>
             ) : (
-              <div className="animate-fade-in">
-                <EmptyBlogsState hasSearchQuery={hasSearchQuery} />
-              </div>
+              <EmptyBlogsState hasSearchQuery={hasSearchQuery} />
             )}
           </div>
         )}
@@ -132,7 +128,7 @@ const Index = () => {
         {/* Load More Section (for future pagination) */}
         {displayBlogs && displayBlogs.length > 0 && !hasSearchQuery && (
           <div className="text-center mt-8 sm:mt-12 py-6 sm:py-8">
-            <p className="text-muted-foreground text-xs sm:text-sm bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full inline-block">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               Showing all {displayBlogs.length} posts
             </p>
           </div>
