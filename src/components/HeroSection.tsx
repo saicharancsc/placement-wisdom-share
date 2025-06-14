@@ -48,7 +48,8 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 onClick={scrollToExperiences}
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
+                variant="outline"
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
               >
                 Browse Experiences
               </Button>
