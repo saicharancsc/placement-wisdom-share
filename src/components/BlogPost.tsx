@@ -11,6 +11,8 @@ import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
 import { useComments, useCreateComment } from '@/hooks/useComments';
 import { useCheckBookmarkStatus, useToggleBookmark } from '@/hooks/useBookmarks';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import Navigation from './Navigation';
 
 const BlogPost = () => {
@@ -24,16 +26,38 @@ const BlogPost = () => {
   const bookmarkMutation = useToggleBookmark();
   const createCommentMutation = useCreateComment();
   
+  // Check if user has liked this blog
+  const { data: isLiked = false } = useQuery({
+    queryKey: ['like-status', id, user?.id],
+    queryFn: async () => {
+      if (!user || !id) return false;
+      
+      const { data, error } = await supabase
+        .from('likes')
+        .select('user_id')
+        .eq('blog_id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+        
+      if (error) throw error;
+      return !!data;
+    },
+    enabled: !!user && !!id,
+  });
+  
   const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(0);
   const [comment, setComment] = React.useState('');
 
   React.useEffect(() => {
     if (blogPost) {
-      setLiked(blogPost.is_liked || false);
       setLikeCount(blogPost.likes_count || 0);
     }
   }, [blogPost]);
+
+  React.useEffect(() => {
+    setLiked(isLiked);
+  }, [isLiked]);
 
   if (!id) {
     navigate('/');
@@ -87,7 +111,7 @@ const BlogPost = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 *60 * 24));
     
     if (diffDays === 1) return '1 day ago';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -212,7 +236,7 @@ const BlogPost = () => {
                   variant="ghost"
                   onClick={handleLike}
                   className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
-                  disabled={!user}
+                  disabled={!user || likeMutation.isPending}
                 >
                   <Heart className={`w-5 h-5 mr-2 ${liked ? 'fill-current' : ''}`} />
                   {likeCount} Likes

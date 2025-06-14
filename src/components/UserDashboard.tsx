@@ -23,15 +23,50 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserBlogs, useDeleteBlog } from '@/hooks/useUserBlogs';
 import { useProfile } from '@/hooks/useProfile';
+import { useBookmarks } from '@/hooks/useBookmarks';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import EditProfileDialog from './EditProfileDialog';
+import BlogCard from './BlogCard';
 
 const UserDashboard = () => {
   const { user } = useAuth();
   const { data: userPosts, isLoading } = useUserBlogs();
   const { data: profile } = useProfile();
+  const { data: bookmarkedPosts } = useBookmarks();
   const deletePost = useDeleteBlog();
   const navigate = useNavigate();
+
+  // Fetch liked posts
+  const { data: likedPosts } = useQuery({
+    queryKey: ['liked-posts', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from('likes')
+        .select(`
+          blog_id,
+          blogs!inner(
+            *,
+            author:users!blogs_author_id_fkey(id, name, email),
+            likes_count:likes(count),
+            comments_count:comments(count)
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      
+      return data?.map(like => ({
+        ...like.blogs,
+        likes_count: like.blogs.likes_count?.[0]?.count || 0,
+        comments_count: like.blogs.comments_count?.[0]?.count || 0,
+      })) || [];
+    },
+    enabled: !!user,
+  });
 
   const handleDelete = async (blogId: string) => {
     if (window.confirm('Are you sure you want to delete this blog post?')) {
@@ -293,28 +328,64 @@ const UserDashboard = () => {
           )}
         </TabsContent>
 
-        {/* Liked Posts - Placeholder for now */}
+        {/* Liked Posts */}
         <TabsContent value="liked" className="space-y-4">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No liked posts yet
-            </h3>
-            <p className="text-gray-600">
-              Posts you like will appear here.
-            </p>
-          </div>
+          {likedPosts && likedPosts.length > 0 ? (
+            <div className="space-y-4">
+              {likedPosts.map((post) => (
+                <BlogCard 
+                  key={post.id} 
+                  {...post}
+                  likes={post.likes_count || 0}
+                  comments={post.comments_count || 0}
+                  createdAt={post.created_at}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No liked posts yet
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Posts you like will appear here.
+              </p>
+              <Link to="/">
+                <Button>Explore Posts</Button>
+              </Link>
+            </div>
+          )}
         </TabsContent>
 
-        {/* Bookmarked Posts - Placeholder for now */}
+        {/* Bookmarked Posts */}
         <TabsContent value="bookmarked" className="space-y-4">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No bookmarked posts yet
-            </h3>
-            <p className="text-gray-600">
-              Posts you bookmark will appear here.
-            </p>
-          </div>
+          {bookmarkedPosts && bookmarkedPosts.length > 0 ? (
+            <div className="space-y-4">
+              {bookmarkedPosts.map((post) => (
+                <BlogCard 
+                  key={post.id} 
+                  {...post}
+                  likes={post.likes_count || 0}
+                  comments={post.comments_count || 0}
+                  createdAt={post.created_at}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Bookmark className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No bookmarked posts yet
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Posts you bookmark will appear here.
+              </p>
+              <Link to="/">
+                <Button>Explore Posts</Button>
+              </Link>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

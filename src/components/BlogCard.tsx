@@ -10,6 +10,9 @@ import { Blog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
 import { usePublicProfile } from '@/hooks/usePublicProfile';
+import { useCheckBookmarkStatus, useToggleBookmark } from '@/hooks/useBookmarks';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BlogCardProps extends Blog {
   likes: number;
@@ -29,22 +32,42 @@ const BlogCard: React.FC<BlogCardProps> = ({
   likes,
   comments,
   createdAt,
-  is_liked = false,
-  is_bookmarked = false,
 }) => {
   const { user } = useAuth();
   const { data: authorProfile, isLoading: profileLoading } = usePublicProfile(author_id);
+  const { data: isBookmarked = false } = useCheckBookmarkStatus(id);
   const likeMutation = useLikeBlog();
-  const [liked, setLiked] = React.useState(is_liked);
-  const [bookmarked, setBookmarked] = React.useState(is_bookmarked);
+  const bookmarkMutation = useToggleBookmark();
+  
+  // Check if user has liked this blog
+  const { data: isLiked = false } = useQuery({
+    queryKey: ['like-status', id, user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      
+      const { data, error } = await supabase
+        .from('likes')
+        .select('user_id')
+        .eq('blog_id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+        
+      if (error) throw error;
+      return !!data;
+    },
+    enabled: !!user && !!id,
+  });
+
+  const [liked, setLiked] = React.useState(false);
   const [likeCount, setLikeCount] = React.useState(likes);
 
-  // Debug logging
   React.useEffect(() => {
-    console.log('BlogCard - author_id:', author_id);
-    console.log('BlogCard - authorProfile:', authorProfile);
-    console.log('BlogCard - profileLoading:', profileLoading);
-  }, [author_id, authorProfile, profileLoading]);
+    setLiked(isLiked);
+  }, [isLiked]);
+
+  React.useEffect(() => {
+    setLikeCount(likes);
+  }, [likes]);
 
   const handleLike = async () => {
     if (!user) return;
@@ -62,8 +85,17 @@ const BlogCard: React.FC<BlogCardProps> = ({
     }
   };
 
-  const handleBookmark = () => {
-    setBookmarked(!bookmarked);
+  const handleBookmark = async () => {
+    if (!user) return;
+    
+    try {
+      await bookmarkMutation.mutateAsync({ 
+        blogId: id, 
+        isBookmarked: isBookmarked 
+      });
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -94,8 +126,6 @@ const BlogCard: React.FC<BlogCardProps> = ({
                   <AvatarImage 
                     src={avatarUrl} 
                     alt={`${displayName}'s avatar`}
-                    onLoad={() => console.log('Avatar loaded successfully')}
-                    onError={(e) => console.log('Avatar failed to load:', e)}
                   />
                 ) : null}
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
@@ -119,9 +149,10 @@ const BlogCard: React.FC<BlogCardProps> = ({
             variant="ghost"
             size="sm"
             onClick={handleBookmark}
-            className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
+            disabled={bookmarkMutation.isPending || !user}
+            className={`${isBookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
           >
-            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
           </Button>
         </div>
       </CardHeader>
@@ -160,8 +191,8 @@ const BlogCard: React.FC<BlogCardProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleLike}
+                disabled={likeMutation.isPending || !user}
                 className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
-                disabled={!user}
               >
                 <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
                 {likeCount}
