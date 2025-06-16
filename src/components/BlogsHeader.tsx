@@ -16,11 +16,11 @@ const BlogsHeader: React.FC<BlogsHeaderProps> = ({
 }) => {
   if (hasSearchQuery) {
     return (
-      <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold gradient-text mb-3">
+      <div className="text-center mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
           Search Results for "{searchQuery}"
         </h1>
-        <p className="text-midnight-600 text-base sm:text-lg">
+        <p className="text-muted-foreground text-sm sm:text-base">
           {isSearching ? 'Searching...' : `Found ${blogCount || 0} result(s)`}
         </p>
       </div>
@@ -28,9 +28,9 @@ const BlogsHeader: React.FC<BlogsHeaderProps> = ({
   }
 
   return (
-    <div className="text-center mb-6 sm:mb-8">
-      <h2 className="text-3xl sm:text-4xl font-bold gradient-text mb-4 sm:mb-6">Latest Placement Experiences</h2>
-      <p className="text-midnight-600 max-w-2xl mx-auto text-base sm:text-lg px-4">
+    <div className="text-center mb-4 sm:mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">Latest Placement Experiences</h2>
+      <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base px-4">
         Discover interview experiences, tips, and insights from your peers to ace your placement season.
       </p>
     </div>

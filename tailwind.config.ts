@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,65 +61,7 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				// Pastel and muted neon colors
-				lavender: {
-					50: '#f8f7ff',
-					100: '#f0edff',
-					200: '#e4dcff',
-					300: '#d1c0ff',
-					400: '#b595ff',
-					500: '#9b70ff',
-					600: '#8b5cf6',
-					700: '#7c3aed',
-					800: '#6d28d9',
-					900: '#5b21b6'
-				},
-				blush: {
-					50: '#fff5f7',
-					100: '#ffeef2',
-					200: '#ffdde6',
-					300: '#ffbdd1',
-					400: '#ff8db3',
-					500: '#ff5d95',
-					600: '#f43f5e',
-					700: '#e11d48',
-					800: '#be185d',
-					900: '#9f1239'
-				},
-				teal: {
-					50: '#f0fdfa',
-					100: '#ccfbf1',
-					200: '#99f6e4',
-					300: '#5eead4',
-					400: '#2dd4bf',
-					500: '#14b8a6',
-					600: '#0d9488',
-					700: '#0f766e',
-					800: '#115e59',
-					900: '#134e4a'
-				},
-				midnight: {
-					50: '#f8fafc',
-					100: '#f1f5f9',
-					200: '#e2e8f0',
-					300: '#cbd5e1',
-					400: '#94a3b8',
-					500: '#64748b',
-					600: '#475569',
-					700: '#334155',
-					800: '#1e293b',
-					900: '#0f172a'
 				}
-			},
-			backgroundImage: {
-				'gradient-soft': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-				'gradient-lavender': 'linear-gradient(135deg, #e4dcff 0%, #f8f7ff 100%)',
-				'gradient-blush': 'linear-gradient(135deg, #ffdde6 0%, #fff5f7 100%)',
-				'gradient-teal': 'linear-gradient(135deg, #99f6e4 0%, #f0fdfa 100%)',
-				'gradient-midnight': 'linear-gradient(135deg, #334155 0%, #0f172a 100%)',
-				'gradient-hero': 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-				'gradient-card': 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
