@@ -11,12 +11,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateBlog, useBlog } from '@/hooks/useBlogs';
 import { useUpdateBlog } from '@/hooks/useUserBlogs';
+import { useToast } from '@/hooks/use-toast';
 import Navigation from './Navigation';
 
 const CreateBlog = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
   const { data: existingBlog, isLoading: blogLoading } = useBlog(id || '', { enabled: !!id });
@@ -34,10 +36,15 @@ const CreateBlog = () => {
   const isEditing = !!id;
 
   React.useEffect(() => {
-    if (!user) {
+    if (!authLoading && !user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create or edit blog posts.",
+        variant: "destructive",
+      });
       navigate('/login');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate, toast]);
 
   React.useEffect(() => {
     if (existingBlog && isEditing) {
@@ -96,19 +103,101 @@ const CreateBlog = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to create or edit blog posts.",
+        variant: "destructive",
+      });
+      navigate('/login');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.title.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a title for your experience.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.company.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter the company name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.college.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter your college name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.role.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please select a role.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.content.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please share your experience content.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log('Submitting form with user:', user.id);
+    console.log('Form data:', formData);
 
     try {
       if (isEditing && id) {
         await updateBlogMutation.mutateAsync({ id, ...formData });
+        toast({
+          title: "Success",
+          description: "Your experience has been updated successfully!",
+        });
       } else {
         await createBlogMutation.mutateAsync(formData);
+        toast({
+          title: "Success",
+          description: "Your experience has been published successfully!",
+        });
       }
       navigate('/dashboard');
     } catch (error) {
       console.error('Error saving blog:', error);
+      toast({
+        title: "Error",
+        description: isEditing ? "Failed to update your experience. Please try again." : "Failed to publish your experience. Please try again.",
+        variant: "destructive",
+      });
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return null;
