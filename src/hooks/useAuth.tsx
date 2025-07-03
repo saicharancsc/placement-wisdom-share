@@ -29,9 +29,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // If user just signed up/in, ensure they exist in users table
+      if (session?.user && _event === 'SIGNED_IN') {
+        try {
+          // Check if user exists in users table
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', session.user.id)
+            .single();
+          
+          // If user doesn't exist, create them
+          if (!existingUser) {
+            const { error: insertError } = await supabase
+              .from('users')
+              .insert({
+                id: session.user.id,
+                email: session.user.email!,
+                name: session.user.user_metadata?.name || session.user.email!,
+              });
+            
+            if (insertError) {
+              console.error('Error creating user record:', insertError);
+            }
+          }
+        } catch (error) {
+          console.error('Error checking/creating user:', error);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -164,6 +165,34 @@ const CreateBlog = () => {
     console.log('Form data:', formData);
 
     try {
+      // Double-check that user exists in users table before submitting
+      const { data: userExists } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+      
+      if (!userExists) {
+        // Create user record if it doesn't exist
+        const { error: userInsertError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email!,
+            name: user.user_metadata?.name || user.email!,
+          });
+        
+        if (userInsertError) {
+          console.error('Error creating user record:', userInsertError);
+          toast({
+            title: "Error",
+            description: "Failed to create user record. Please try signing out and back in.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       if (isEditing && id) {
         await updateBlogMutation.mutateAsync({ id, ...formData });
         toast({
