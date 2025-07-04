@@ -11,6 +11,7 @@ import {
 import { PlusCircle, Search, BookOpen, User, LogOut, Bookmark, Heart, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 interface NavigationProps {
   searchQuery?: string;
@@ -20,13 +21,24 @@ interface NavigationProps {
 const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const handleSignOut = async () => {
     try {
       await signOut();
-      navigate('/');
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+      // Navigate to home page after successful signout
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);
+      toast({
+        title: "Error",
+        description: "There was an error signing out. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -106,7 +118,7 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                         Bookmarks
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </DropdownMenuItem>

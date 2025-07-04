@@ -20,47 +20,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
+    // Listen for auth changes first
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // If user just signed up/in, ensure they exist in users table
-      if (session?.user && _event === 'SIGNED_IN') {
-        try {
-          // Check if user exists in users table
-          const { data: existingUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('id', session.user.id)
-            .single();
-          
-          // If user doesn't exist, create them
-          if (!existingUser) {
-            const { error: insertError } = await supabase
+      // If user just signed in, ensure they exist in users table
+      if (session?.user && event === 'SIGNED_IN') {
+        setTimeout(async () => {
+          try {
+            // Check if user exists in users table
+            const { data: existingUser } = await supabase
               .from('users')
-              .insert({
-                id: session.user.id,
-                email: session.user.email!,
-                name: session.user.user_metadata?.name || session.user.email!,
-              });
+              .select('id')
+              .eq('id', session.user.id)
+              .single();
             
-            if (insertError) {
-              console.error('Error creating user record:', insertError);
+            // If user doesn't exist, create them
+            if (!existingUser) {
+              const { error: insertError } = await supabase
+                .from('users')
+                .insert({
+                  id: session.user.id,
+                  email: session.user.email!,
+                  name: session.user.user_metadata?.name || session.user.email!,
+                });
+              
+              if (insertError) {
+                console.error('Error creating user record:', insertError);
+              } else {
+                console.log('User record created successfully');
+              }
             }
+          } catch (error) {
+            console.error('Error checking/creating user:', error);
           }
-        } catch (error) {
-          console.error('Error checking/creating user:', error);
-        }
+        }, 0);
       }
+      
+      // Handle sign out event
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, clearing state');
+        setUser(null);
+      }
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.email);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -123,8 +136,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    console.log('Signing out user...');
     const { error } = await supabase.auth.signOut();
+    
     if (error) {
+      console.error('Sign out error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -132,6 +148,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       throw error;
     }
+    
+    console.log('Sign out successful');
+    // User state will be cleared by the onAuthStateChange listener
   };
 
   return (
