@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -107,6 +108,10 @@ const BlogPost = () => {
     }
   };
 
+  const handleUserClick = (userId: string) => {
+    navigate(`/profile/${userId}`);
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -171,7 +176,12 @@ const BlogPost = () => {
                   <AvatarFallback>{blogPost.author?.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-gray-900">{blogPost.author?.name || 'Anonymous'}</p>
+                  <button
+                    onClick={() => handleUserClick(blogPost.author_id || '')}
+                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    {blogPost.author?.name || 'Anonymous'}
+                  </button>
                   <div className="flex items-center space-x-2 text-sm text-gray-500">
                     <Calendar className="w-3 h-3" />
                     <span>{formatDate(blogPost.created_at)}</span>
@@ -295,7 +305,12 @@ const BlogPost = () => {
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-sm">{comment.author?.name || 'Anonymous'}</span>
+                          <button
+                            onClick={() => handleUserClick(comment.author_id || '')}
+                            className="font-medium text-sm text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                          >
+                            {comment.author?.name || 'Anonymous'}
+                          </button>
                           <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
                         </div>
                         <p className="text-gray-700 text-sm leading-relaxed mb-2">{comment.content}</p>
