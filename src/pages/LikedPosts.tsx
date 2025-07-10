@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -92,34 +91,37 @@ const LikedPosts = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
-      <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Liked Posts</h1>
-          <p className="text-muted-foreground">
+      <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Liked Posts</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Your favorite placement experiences and insights.
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {likedBlogs && likedBlogs.length > 0 ? (
-            likedBlogs.map((blog) => (
-              <BlogCard 
-                key={blog.id} 
-                {...blog}
-                likes={blog.likes_count || 0}
-                comments={blog.comments_count || 0}
-                createdAt={blog.created_at}
-              />
-            ))
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+              {likedBlogs.map((blog) => (
+                <div key={blog.id} className="h-full flex">
+                  <BlogCard 
+                    {...blog}
+                    likes={blog.likes_count || 0}
+                    comments={blog.comments_count || 0}
+                    createdAt={blog.created_at}
+                  />
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="text-center py-12">
-              <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No liked posts yet</h3>
-              <p className="text-muted-foreground mb-6">
+            <div className="text-center py-10 sm:py-12">
+              <Heart className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No liked posts yet</h3>
+              <p className="text-muted-foreground mb-4 text-xs sm:text-base px-4">
                 Start exploring and like posts that you find helpful!
               </p>
               <Link to="/">
-                <Button>Explore Posts</Button>
+                <Button className="w-full sm:w-auto">Explore Posts</Button>
               </Link>
             </div>
           )}

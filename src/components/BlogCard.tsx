@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Bookmark, Calendar, Building2 } from 'lucide-react';
+import { Avatar, AvatarFallback, getInitial } from '@/components/ui/avatar';
+import { Heart, MessageCircle, Bookmark, Calendar, Building2, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Blog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
@@ -18,6 +17,17 @@ interface BlogCardProps extends Blog {
   likes: number;
   comments: number;
   createdAt: string;
+  fromTab?: string;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
+}
+
+// Utility function to convert a string to UpperCamelCase
+function toUpperCamelCase(str: string) {
+  return str
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({
@@ -32,6 +42,9 @@ const BlogCard: React.FC<BlogCardProps> = ({
   likes,
   comments,
   createdAt,
+  fromTab,
+  onEdit,
+  onDelete,
 }) => {
   const { user } = useAuth();
   const { data: authorProfile, isLoading: profileLoading } = usePublicProfile(author_id);
@@ -122,103 +135,121 @@ const BlogCard: React.FC<BlogCardProps> = ({
 
   // Get display name and avatar with proper fallbacks
   const displayName = authorProfile?.name || author?.name || 'Anonymous';
-  const avatarUrl = authorProfile?.avatar_url;
-  const avatarFallback = displayName.charAt(0).toUpperCase();
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200">
+    <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200 w-full h-full flex flex-col">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div className="flex items-center space-x-3">
             <Link to={`/profile/${author_id}`}>
-              <Avatar className="w-10 h-10 hover:ring-2 hover:ring-blue-200 transition-all cursor-pointer">
-                {avatarUrl ? (
-                  <AvatarImage 
-                    src={avatarUrl} 
-                    alt={`${displayName}'s avatar`}
-                  />
-                ) : null}
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-                  {avatarFallback}
+              <Avatar className="w-8 h-8 sm:w-10 sm:h-10 hover:ring-2 hover:ring-blue-200 transition-all cursor-pointer">
+                <AvatarFallback className="bg-blue-600 text-white font-semibold">
+                  {getInitial(authorProfile?.name, author?.email)}
                 </AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link to={`/profile/${author_id}`}>
-                <p className="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer">
+                <p className="font-medium text-gray-900 hover:text-blue-600 transition-colors cursor-pointer text-xs sm:text-base">
                   {displayName}
                 </p>
               </Link>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
                 <Calendar className="w-3 h-3" />
                 <span>{formatDate(createdAt)}</span>
               </div>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBookmark}
-            disabled={bookmarkMutation.isPending || !user}
-            className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
-          >
-            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
-          </Button>
+          {fromTab !== 'my-posts' && fromTab !== 'liked' && fromTab !== 'bookmarked' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBookmark}
+              disabled={bookmarkMutation.isPending || !user}
+              className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600 self-end sm:self-auto`}
+            >
+              <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+            </Button>
+          )}
+          {fromTab === 'my-posts' && (onEdit || onDelete) && (
+            <div className="flex flex-row gap-2 ml-2">
+              {onEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm"
+                  onClick={() => onEdit(id)}
+                >
+                  <Edit className="w-4 h-4 mr-1" /> Edit
+                </Button>
+              )}
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700 text-xs sm:text-sm"
+                  onClick={() => onDelete(id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-1" /> Delete
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Building2 className="w-4 h-4 text-gray-500" />
-            <span className="font-semibold text-gray-900">{company}</span>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+      <CardContent className="pt-0 pb-6 flex flex-col flex-1 justify-between h-full">
+        <div className="space-y-3 flex-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <div className="flex items-center space-x-2 min-w-0">
+              <Building2 className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              <span className="font-semibold text-gray-900 text-xs sm:text-base truncate">{toUpperCamelCase(company)}</span>
+            </div>
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-xs sm:text-sm flex-shrink-0">
               {role}
             </Badge>
           </div>
           
-          <Link to={`/blog/${id}`}>
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-              {title}
+          <Link to={fromTab ? `/blog/${id}?tab=${fromTab}` : `/blog/${id}` }>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+              {toUpperCamelCase(title)}
             </h3>
           </Link>
           
-          <p className="text-gray-600 line-clamp-3 leading-relaxed">
+          <p className="text-gray-600 line-clamp-3 leading-relaxed text-xs sm:text-base">
             {content.substring(0, 200)}...
           </p>
           
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             {tags?.map((tag, index) => (
               <Badge key={index} variant="outline" className="text-xs">
                 {tag}
               </Badge>
             ))}
           </div>
-          
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLike}
-                disabled={likeMutation.isPending || !user}
-                className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
-              >
-                <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
-                {likeCount}
-              </Button>
-              <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
-                <MessageCircle className="w-4 h-4 mr-1" />
-                {comments}
-              </Button>
-            </div>
-            
-            <Link to={`/blog/${id}`}>
-              <Button variant="outline" size="sm" className="group-hover:bg-blue-50 group-hover:border-blue-200">
-                Read More
-              </Button>
-            </Link>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3 mt-auto">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              disabled={likeMutation.isPending || !user}
+              className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500 text-xs sm:text-sm`}
+            >
+              <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
+              {likeCount}
+            </Button>
+            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500 text-xs sm:text-sm">
+              <MessageCircle className="w-4 h-4 mr-1" />
+              {comments}
+            </Button>
           </div>
+          <Link to={`/blog/${id}`} className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto group-hover:bg-blue-50 group-hover:border-blue-200">
+              Read More
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage, getInitial } from '@/components/ui/avatar';
 import { FileText, Heart, MessageCircle, MapPin, Globe, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,38 +20,22 @@ const ProfileHeader = ({ userStats }: ProfileHeaderProps) => {
   const { user } = useAuth();
   const { data: profile } = useProfile();
 
-  const getUserInitials = () => {
-    const name = profile?.name || user?.user_metadata?.name || user?.email;
-    if (!name) return 'U';
-    
-    const words = name.split(' ');
-    if (words.length >= 2) {
-      return `${words[0].charAt(0)}${words[1].charAt(0)}`.toUpperCase();
-    }
-    return name.charAt(0).toUpperCase();
-  };
-
   const displayName = profile?.name || user?.user_metadata?.name || 'Student';
-  const currentAvatar = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${getUserInitials()}&backgroundColor=3b82f6&textColor=ffffff`;
+  const currentAvatar = profile?.avatar_url || undefined;
 
   return (
-    <Card className="mb-8 overflow-hidden shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
-      <CardContent className="pt-8 pb-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
+    <Card className="mb-6 sm:mb-8 overflow-hidden shadow-lg border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <CardContent className="pt-6 sm:pt-8 pb-4 sm:pb-6">
+        <div className="flex flex-row items-center space-x-2 sm:space-x-8 overflow-x-auto w-full">
           {/* Avatar Section */}
-          <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-2 sm:space-y-4 flex-shrink-0">
             <div className="relative">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
-                <AvatarImage 
-                  src={currentAvatar}
-                  alt="Profile picture"
-                  className="object-cover"
-                />
-                <AvatarFallback className="text-3xl font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-                  {getUserInitials()}
+              <Avatar className="w-16 h-16 sm:w-32 sm:h-32 border-4 border-white shadow-xl ring-4 ring-blue-100">
+                <AvatarFallback className="text-lg sm:text-3xl font-bold bg-blue-600 text-white">
+                  {getInitial(profile?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+              <div className="absolute bottom-2 right-2 bg-green-500 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-2 border-white"></div>
             </div>
             <EditProfileDialog>
               <Button variant="outline" size="sm" className="text-xs">
@@ -63,22 +46,21 @@ const ProfileHeader = ({ userStats }: ProfileHeaderProps) => {
           </div>
           
           {/* Profile Info */}
-          <div className="flex-1 text-center md:text-left">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="flex-1 text-left min-w-[180px]">
+            <h2 className="text-base sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
               {displayName}
             </h2>
-            <p className="text-lg text-gray-600 mb-1">
+            <p className="text-xs sm:text-lg text-gray-600 mb-1">
               {user?.email}
             </p>
-            
             {/* Additional Profile Info */}
-            <div className="space-y-1 mb-4">
+            <div className="space-y-1 mb-2 sm:mb-4">
               {profile?.bio && (
-                <p className="text-gray-500 max-w-md">
+                <p className="text-gray-500 max-w-md text-xs sm:text-base mx-auto md:mx-0">
                   {profile.bio}
                 </p>
               )}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                 {profile?.location && (
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
@@ -100,42 +82,38 @@ const ProfileHeader = ({ userStats }: ProfileHeaderProps) => {
                 )}
               </div>
             </div>
-            
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-6 max-w-md mx-auto md:mx-0">
-              <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-center mb-2">
-                  <FileText className="w-5 h-5 text-blue-600 mr-1" />
-                  <span className="text-2xl font-bold text-gray-900">{userStats.postsCount}</span>
+            <div className="grid grid-cols-3 gap-2 sm:gap-6 max-w-xs sm:max-w-md">
+              <div className="text-center bg-white rounded-xl p-2 sm:p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-center mb-1 sm:mb-2">
+                  <FileText className="w-4 h-4 sm:w-5 h-5 text-blue-600 mr-1" />
+                  <span className="text-lg sm:text-2xl font-bold text-gray-900">{userStats.postsCount}</span>
                 </div>
-                <p className="text-sm text-gray-600 font-medium">Posts</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Posts</p>
               </div>
-              
-              <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-center mb-2">
-                  <Heart className="w-5 h-5 text-red-500 mr-1" />
-                  <span className="text-2xl font-bold text-gray-900">{userStats.totalLikes}</span>
+              <div className="text-center bg-white rounded-xl p-2 sm:p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-center mb-1 sm:mb-2">
+                  <Heart className="w-4 h-4 sm:w-5 h-5 text-red-500 mr-1" />
+                  <span className="text-lg sm:text-2xl font-bold text-gray-900">{userStats.totalLikes}</span>
                 </div>
-                <p className="text-sm text-gray-600 font-medium">Likes</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Likes</p>
               </div>
-              
-              <div className="text-center bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="flex items-center justify-center mb-2">
-                  <MessageCircle className="w-5 h-5 text-purple-600 mr-1" />
-                  <span className="text-2xl font-bold text-gray-900">{userStats.totalComments}</span>
+              <div className="text-center bg-white rounded-xl p-2 sm:p-4 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-center mb-1 sm:mb-2">
+                  <MessageCircle className="w-4 h-4 sm:w-5 h-5 text-purple-600 mr-1" />
+                  <span className="text-lg sm:text-2xl font-bold text-gray-900">{userStats.totalComments}</span>
                 </div>
-                <p className="text-sm text-gray-600 font-medium">Comments</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Comments</p>
               </div>
             </div>
           </div>
-          
           {/* Action Button */}
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-2 sm:space-y-3 flex-shrink-0 ml-2">
             <Link to="/create">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200">
-                <FileText className="w-5 h-5 mr-2" />
+              {/* <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200">
+                <FileText className="w-4 h-4 sm:w-5 h-5 mr-2" />
                 Write New Post
-              </Button>
+              </Button> */}
             </Link>
           </div>
         </div>

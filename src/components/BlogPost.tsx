@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage, getInitial } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Heart, MessageCircle, Bookmark, Calendar, Building2, Share2, Loader2, ArrowLeft } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useBlog } from '@/hooks/useBlogs';
 import { useLikeBlog } from '@/hooks/useLikes';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,10 +18,17 @@ import Navigation from './Navigation';
 const BlogPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
   const { user } = useAuth();
   const { data: blogPost, isLoading, error } = useBlog(id || '');
   const { data: comments, isLoading: commentsLoading } = useComments(id || '');
   const { data: isBookmarked = false } = useCheckBookmarkStatus(id || '');
+  const [bookmarked, setBookmarked] = React.useState(isBookmarked);
+
+  React.useEffect(() => {
+    setBookmarked(isBookmarked);
+  }, [isBookmarked]);
   const likeMutation = useLikeBlog();
   const bookmarkMutation = useToggleBookmark();
   const createCommentMutation = useCreateComment();
@@ -83,13 +89,15 @@ const BlogPost = () => {
 
   const handleBookmark = async () => {
     if (!user || !blogPost) return;
-    
+    const prevBookmarked = bookmarked;
+    setBookmarked(!bookmarked);
     try {
       await bookmarkMutation.mutateAsync({ 
         blogId: blogPost.id, 
-        isBookmarked: isBookmarked 
+        isBookmarked: prevBookmarked 
       });
     } catch (error) {
+      setBookmarked(prevBookmarked);
       console.error('Error toggling bookmark:', error);
     }
   };
@@ -124,6 +132,17 @@ const BlogPost = () => {
     return `${Math.ceil(diffDays / 30)} months ago`;
   };
 
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    } else {
+      // fallback
+      window.prompt('Copy this link:', url);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -154,35 +173,43 @@ const BlogPost = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Back Navigation */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 p-0"
+            onClick={() => {
+              if (tab) {
+                navigate(`/dashboard?tab=${tab}`);
+              } else {
+                navigate(-1);
+              }
+            }}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 p-0 text-xs sm:text-base"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Back</span>
           </Button>
         </div>
 
-        <Card className="mb-8">
-          <CardHeader className="pb-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>{blogPost.author?.name?.charAt(0) || 'U'}</AvatarFallback>
+        <Card className="mb-6 sm:mb-8">
+          <CardHeader className="pb-4 sm:pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <Avatar className="w-8 h-8 sm:w-12 sm:h-12">
+                  {blogPost.author?.avatar_url ? (
+                    <AvatarImage src={blogPost.author.avatar_url} />
+                  ) : null}
+                  <AvatarFallback className="text-xs sm:text-base">{getInitial(blogPost.author?.name, blogPost.author?.email)}</AvatarFallback>
                 </Avatar>
                 <div>
                   <button
                     onClick={() => handleUserClick(blogPost.author_id || '')}
-                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer"
+                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors cursor-pointer text-xs sm:text-base"
                   >
                     {blogPost.author?.name || 'Anonymous'}
                   </button>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
                     <Calendar className="w-3 h-3" />
                     <span>{formatDate(blogPost.created_at)}</span>
                   </div>
@@ -194,36 +221,38 @@ const BlogPost = () => {
                   size="sm"
                   onClick={handleBookmark}
                   disabled={bookmarkMutation.isPending || !user}
-                  className={`${isBookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
+                  className={`${bookmarked ? 'text-blue-600' : 'text-gray-400'} hover:text-blue-600`}
                 >
                   {bookmarkMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                    <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
                   )}
                 </Button>
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600" onClick={handleShare}>
                   <Share2 className="w-4 h-4" />
                 </Button>
               </div>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Building2 className="w-5 h-5 text-gray-500" />
-                <span className="font-semibold text-lg text-gray-900">{blogPost.company}</span>
-                <Badge className="bg-blue-100 text-blue-700">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
+                  <span className="font-semibold text-gray-900 text-xs sm:text-lg truncate">{blogPost.company}</span>
+                </div>
+                <Badge className="bg-blue-100 text-blue-700 text-xs sm:text-base flex-shrink-0">
                   {blogPost.role}
                 </Badge>
               </div>
               
-              <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-lg sm:text-3xl font-bold text-gray-900 leading-tight">
                 {blogPost.title}
               </h1>
               
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {blogPost.tags?.map((tag, index) => (
-                  <Badge key={index} variant="outline">
+                  <Badge key={index} variant="outline" className="text-xs sm:text-base">
                     {tag}
                   </Badge>
                 ))}
@@ -232,30 +261,31 @@ const BlogPost = () => {
           </CardHeader>
           
           <CardContent>
-            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-8">
+            <div className="prose prose-sm sm:prose-lg max-w-none text-gray-700 leading-relaxed mb-6 sm:mb-8">
               {blogPost.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-4">
+                <p key={index} className="mb-3 sm:mb-4">
                   {paragraph}
                 </p>
               ))}
             </div>
             
-            <div className="flex items-center justify-between pt-8 border-t border-gray-200">
-              <div className="flex items-center space-x-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-6 sm:pt-8 border-t border-gray-200 gap-3">
+              <div className="flex items-center space-x-4">
                 <Button
                   variant="ghost"
                   onClick={handleLike}
-                  className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
+                  className={`${liked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500 text-xs sm:text-base`}
                   disabled={!user || likeMutation.isPending}
                 >
-                  <Heart className={`w-5 h-5 mr-2 ${liked ? 'fill-current' : ''}`} />
-                  {likeCount} Likes
+                  <Heart className={`w-4 h-4 mr-1 ${liked ? 'fill-current' : ''}`} />
+                  {likeCount}
                 </Button>
-                <Button variant="ghost" className="text-gray-500 hover:text-blue-500">
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  {comments?.length || 0} Comments
+                <Button variant="ghost" className="text-gray-500 hover:text-blue-500 text-xs sm:text-base">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  {comments?.length || 0}
                 </Button>
               </div>
+              {/* Share button can be added here for mobile if needed */}
             </div>
           </CardContent>
         </Card>
@@ -300,8 +330,10 @@ const BlogPost = () => {
                   <div key={comment.id} className="border-l-2 border-gray-100 pl-4">
                     <div className="flex items-start space-x-3">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback>{comment.author?.name?.charAt(0) || 'U'}</AvatarFallback>
+                        {comment.author?.avatar_url ? (
+                          <AvatarImage src={comment.author.avatar_url} />
+                        ) : null}
+                        <AvatarFallback>{getInitial(comment.author?.name, comment.author?.email)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">

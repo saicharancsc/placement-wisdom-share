@@ -59,7 +59,7 @@ export const usePublicProfile = (userId: string) => {
       } as PublicProfile;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };

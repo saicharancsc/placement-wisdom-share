@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage, getInitial } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Calendar, Building2, Home, Bookmark as BookmarkIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useBookmarks } from '@/hooks/useBookmarks';
@@ -58,51 +57,53 @@ const Bookmarks = () => {
       <div className="max-w-4xl mx-auto">
         {/* Navigation Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors w-fit">
+          <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors w-fit text-sm sm:text-base">
             <Home className="w-5 h-5" />
             <span className="font-medium">Back to Home</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center sm:text-left">My Bookmarks</h1>
+          <h1 className="text-xl sm:text-3xl font-bold text-foreground text-center sm:text-left">My Bookmarks</h1>
           <div className="hidden sm:block"></div>
         </div>
 
         {bookmarks && bookmarks.length > 0 ? (
           <div className="space-y-4 sm:space-y-6">
             {bookmarks.map((bookmark) => (
-              <Card key={bookmark.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3 p-4 sm:p-6">
-                  <div className="flex items-start justify-between">
+              <Card key={bookmark.id} className="hover:shadow-lg transition-shadow w-full">
+                <CardHeader className="pb-3 p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center space-x-3">
                       <Link to={`/profile/${bookmark.author_id}`}>
                         <Avatar className="w-8 h-8 sm:w-10 sm:h-10 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer">
-                          <AvatarImage src="/placeholder.svg" />
+                          {bookmark.author?.avatar_url ? (
+                            <AvatarImage src={bookmark.author.avatar_url} />
+                          ) : null}
                           <AvatarFallback className="text-xs sm:text-sm">
-                            {bookmark.author?.name?.charAt(0) || 'U'}
+                            {getInitial(bookmark.author?.name, bookmark.author?.email)}
                           </AvatarFallback>
                         </Avatar>
                       </Link>
                       <div className="min-w-0 flex-1">
                         <Link to={`/profile/${bookmark.author_id}`}>
-                          <p className="font-medium text-foreground hover:text-primary transition-colors cursor-pointer text-sm sm:text-base truncate">
+                          <p className="font-medium text-foreground hover:text-primary transition-colors cursor-pointer text-xs sm:text-base truncate">
                             {bookmark.author?.name || 'Anonymous'}
                           </p>
                         </Link>
-                        <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                           <Calendar className="w-3 h-3" />
                           <span>{formatDate(bookmark.created_at)}</span>
                         </div>
                       </div>
                     </div>
-                    <BookmarkIcon className="w-4 h-4 text-primary fill-current flex-shrink-0" />
+                    <BookmarkIcon className="w-4 h-4 text-primary fill-current flex-shrink-0 self-end sm:self-auto" />
                   </div>
                 </CardHeader>
                 
-                <CardContent className="pt-0 p-4 sm:p-6">
+                <CardContent className="pt-0 p-3 sm:p-6">
                   <div className="space-y-3">
-                    <div className="flex items-center space-x-2 flex-wrap gap-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 flex-wrap gap-2">
                       <div className="flex items-center space-x-2 min-w-0">
                         <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <span className="font-semibold text-foreground text-sm sm:text-base truncate">
+                        <span className="font-semibold text-foreground text-xs sm:text-base truncate">
                           {bookmark.company}
                         </span>
                       </div>
@@ -112,12 +113,12 @@ const Bookmarks = () => {
                     </div>
                     
                     <Link to={`/blog/${bookmark.id}`}>
-                      <h3 className="text-base sm:text-lg font-semibold text-foreground hover:text-primary transition-colors line-clamp-2 leading-tight">
+                      <h3 className="text-sm sm:text-lg font-semibold text-foreground hover:text-primary transition-colors line-clamp-2 leading-tight">
                         {bookmark.title}
                       </h3>
                     </Link>
                     
-                    <p className="text-muted-foreground line-clamp-3 leading-relaxed text-sm sm:text-base">
+                    <p className="text-muted-foreground line-clamp-3 leading-relaxed text-xs sm:text-base">
                       {bookmark.content.substring(0, 200)}...
                     </p>
                     
@@ -131,11 +132,11 @@ const Bookmarks = () => {
                     
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 gap-3">
                       <div className="flex items-center space-x-4">
-                        <div className="flex items-center text-muted-foreground text-sm">
+                        <div className="flex items-center text-muted-foreground text-xs sm:text-sm">
                           <Heart className="w-4 h-4 mr-1" />
                           {bookmark.likes_count || 0}
                         </div>
-                        <div className="flex items-center text-muted-foreground text-sm">
+                        <div className="flex items-center text-muted-foreground text-xs sm:text-sm">
                           <MessageCircle className="w-4 h-4 mr-1" />
                           {bookmark.comments_count || 0}
                         </div>
@@ -158,7 +159,7 @@ const Bookmarks = () => {
             <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">
               No bookmarks yet
             </h3>
-            <p className="text-muted-foreground mb-4 text-sm sm:text-base px-4">
+            <p className="text-muted-foreground mb-4 text-xs sm:text-base px-4">
               Start bookmarking posts you want to read later!
             </p>
             <Link to="/">

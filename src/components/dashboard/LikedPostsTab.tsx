@@ -37,6 +37,7 @@ const LikedPostsTab = ({ likedPosts }: LikedPostsTabProps) => {
           likes={post.likes_count || 0}
           comments={post.comments_count || 0}
           createdAt={post.created_at}
+          fromTab="liked"
         />
       ))}
     </div>

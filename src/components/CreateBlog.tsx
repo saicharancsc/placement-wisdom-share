@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -247,189 +246,151 @@ const CreateBlog = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <Card className="border border-border shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-border">
-            <CardTitle className="text-2xl font-bold text-foreground">
-              {isEditing ? 'Edit Your Experience' : 'Share Your Placement Experience'}
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        <Card className="w-full">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-lg sm:text-2xl font-bold text-foreground mb-2 sm:mb-4">
+              {isEditing ? 'Edit Experience' : 'Share Your Placement Experience'}
             </CardTitle>
-            <p className="text-muted-foreground">
-              {isEditing ? 'Update your interview journey, tips, and insights.' : 'Help your juniors by sharing your interview journey, tips, and insights.'}
-            </p>
           </CardHeader>
-          
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-sm font-medium text-foreground">
-                  Title *
-                </Label>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="title" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Title</Label>
                 <Input
                   id="title"
-                  placeholder="e.g., My Google SDE Interview Experience - Tips and Insights"
+                  type="text"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
+                  placeholder="e.g. My Google SDE Internship Experience"
                   required
-                  className="text-base border-input"
+                  disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                  className="text-xs sm:text-base"
                 />
               </div>
-
-              {/* Company, College and Role */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company" className="text-sm font-medium text-foreground">
-                    Company *
-                  </Label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1">
+                  <Label htmlFor="company" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Company</Label>
                   <Input
                     id="company"
-                    placeholder="e.g., Google, Microsoft, Amazon"
+                    type="text"
                     value={formData.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
+                    placeholder="e.g. Google"
                     required
-                    className="border-input"
+                    disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                    className="text-xs sm:text-base"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="college" className="text-sm font-medium text-foreground">
-                    College *
-                  </Label>
+                <div className="flex-1">
+                  <Label htmlFor="college" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">College</Label>
                   <Input
                     id="college"
-                    placeholder="e.g., IIT Delhi, MIT, Stanford"
+                    type="text"
                     value={formData.college}
                     onChange={(e) => handleInputChange('college', e.target.value)}
+                    placeholder="e.g. IIT Bombay"
                     required
-                    className="border-input"
+                    disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                    className="text-xs sm:text-base"
                   />
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="role" className="text-sm font-medium text-foreground">
-                    Role *
-                  </Label>
-                  <Select onValueChange={(value) => handleInputChange('role', value)} value={formData.role}>
-                    <SelectTrigger className="border-input">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border border-border">
-                      {popularRoles.map((role) => (
-                        <SelectItem key={role} value={role}>
-                          {role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
-
-              {/* Content */}
-              <div className="space-y-2">
-                <Label htmlFor="content" className="text-sm font-medium text-foreground">
-                  Your Experience *
-                </Label>
-                <Textarea
-                  id="content"
-                  placeholder="Share your complete experience... Include details about:&#10;• Application process&#10;• Interview rounds and questions&#10;• Preparation tips&#10;• Timeline&#10;• Key learnings&#10;• Advice for juniors"
-                  value={formData.content}
-                  onChange={(e) => handleInputChange('content', e.target.value)}
-                  rows={15}
-                  required
-                  className="resize-none text-base leading-relaxed border-input"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Tip: Use line breaks to organize your content into sections
-                </p>
-              </div>
-
-              {/* Tags */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-foreground">Tags</Label>
-                
-                {/* Popular Tags */}
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground">Popular tags:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {popularTags.map((tag) => (
-                      <Button
-                        key={tag}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className={`text-xs ${formData.tags.includes(tag) ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-input'}`}
-                        onClick={() => addTag(tag)}
-                      >
-                        <Plus className="w-3 h-3 mr-1" />
-                        {tag}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Custom Tag Input */}
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Add custom tag"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        addTag(newTag);
-                      }
-                    }}
-                    className="flex-1 border-input"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => addTag(newTag)}
-                    className="border-input"
-                  >
-                    Add
-                  </Button>
-                </div>
-
-                {/* Selected Tags */}
-                {formData.tags.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground">Selected tags:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {formData.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1 bg-secondary text-secondary-foreground">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-1 text-muted-foreground hover:text-foreground"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Submit Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white flex-1 font-medium"
+              <div>
+                <Label htmlFor="role" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Role</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => handleInputChange('role', value)}
                   disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
                 >
-                  {createBlogMutation.isPending || updateBlogMutation.isPending 
-                    ? (isEditing ? 'Updating...' : 'Publishing...') 
-                    : (isEditing ? 'Update Experience' : 'Publish Experience')
-                  }
+                  <SelectTrigger className="w-full text-xs sm:text-base">
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {popularRoles.map((role) => (
+                      <SelectItem key={role} value={role} className="text-xs sm:text-base">{role}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="content" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Experience</Label>
+                <Textarea
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => handleInputChange('content', e.target.value)}
+                  placeholder="Share your experience in detail..."
+                  rows={6}
+                  required
+                  disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                  className="text-xs sm:text-base"
+                />
+              </div>
+              <div>
+                <Label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Tags</Label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-0">
+                    {formData.tags.map((tag) => (
+                      <Badge key={tag} className="text-xs sm:text-sm flex items-center gap-1">
+                        {tag}
+                        <button type="button" onClick={() => removeTag(tag)} className="ml-1 text-gray-400 hover:text-red-500">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      placeholder="Add tag"
+                      className="text-xs sm:text-base"
+                      disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addTag(newTag.trim());
+                        }
+                      }}
+                    />
+                    <Button type="button" size="sm" onClick={() => addTag(newTag.trim())} disabled={!newTag.trim() || createBlogMutation.isPending || updateBlogMutation.isPending}>
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
+                  {popularTags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      className={`cursor-pointer text-xs sm:text-sm ${formData.tags.includes(tag) ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}
+                      onClick={() => addTag(tag)}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium text-xs sm:text-base"
+                  disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
+                >
+                  {isEditing
+                    ? updateBlogMutation.isPending
+                      ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Updating...</>)
+                      : 'Update Experience'
+                    : createBlogMutation.isPending
+                      ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publishing...</>)
+                      : 'Publish Experience'}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate('/dashboard')}
-                  className="border-input"
+                  className="w-full sm:w-auto text-xs sm:text-base"
+                  onClick={() => navigate(-1)}
+                  disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
                 >
                   Cancel
                 </Button>

@@ -45,4 +45,11 @@ const AvatarFallback = React.forwardRef<
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
+// Utility to get the first letter of a name or email
+export function getInitial(name?: string, email?: string) {
+  if (name && name.length > 0) return name[0].toUpperCase();
+  if (email && email.length > 0) return email[0].toUpperCase();
+  return 'U';
+}
+
 export { Avatar, AvatarImage, AvatarFallback }

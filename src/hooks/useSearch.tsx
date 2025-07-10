@@ -36,8 +36,20 @@ export const useSearch = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      return data?.map(blog => ({
+
+      // Client-side filter for tags (case-insensitive, partial match)
+      const lowerQuery = debouncedQuery.toLowerCase();
+      const filtered = data?.filter(blog =>
+        blog.tags && blog.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+      ) || [];
+
+      // Merge server and tag results, removing duplicates
+      const merged = [
+        ...(data || []),
+        ...filtered.filter(f => !(data || []).some(b => b.id === f.id))
+      ];
+
+      return merged.map(blog => ({
         ...blog,
         likes_count: blog.likes_count?.[0]?.count || 0,
         comments_count: blog.comments_count?.[0]?.count || 0,

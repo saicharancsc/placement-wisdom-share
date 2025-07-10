@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Users, BookOpen, Trophy } from 'lucide-react';
@@ -9,7 +8,7 @@ const HeroSection = () => {
   const { user } = useAuth();
 
   const scrollToExperiences = () => {
-    const experiencesSection = document.getElementById('experiences');
+    const experiencesSection = document.getElementById('latest-experiences');
     if (experiencesSection) {
       experiencesSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -31,15 +30,15 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {user ? (
-                <Link to="/create">
-                  <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
+                <Link to="/create" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
                     Share Your Experience
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    {/* <ArrowRight className="ml-2 w-5 h-5" /> */}
                   </Button>
                 </Link>
               ) : (
-                <Link to="/signup">
-                  <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
+                <Link to="/signup" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
                     Get Started
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -49,7 +48,7 @@ const HeroSection = () => {
                 size="lg" 
                 onClick={scrollToExperiences}
                 variant="outline"
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+                className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
               >
                 Browse Experiences
               </Button>
@@ -66,21 +65,21 @@ const HeroSection = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">1000+</h3>
+              <h3 className="text-2xl font-bold text-foreground">100+</h3>
               <p className="text-muted-foreground">Students Helped</p>
             </div>
             <div className="space-y-2">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">500+</h3>
+              <h3 className="text-2xl font-bold text-foreground">50+</h3>
               <p className="text-muted-foreground">Experience Shared</p>
             </div>
             <div className="space-y-2">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Trophy className="w-8 h-8 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">200+</h3>
+              <h3 className="text-2xl font-bold text-foreground">20+</h3>
               <p className="text-muted-foreground">Companies Covered</p>
             </div>
           </div>
@@ -92,7 +91,7 @@ const HeroSection = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Why Choose PlacementWise?
+              Why Choose Sharify?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Get authentic experiences from students who've successfully navigated the placement process.

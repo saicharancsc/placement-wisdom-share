@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, getInitial } from '@/components/ui/avatar';
 import { Camera, Loader2, User } from 'lucide-react';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
@@ -115,29 +115,12 @@ const EditProfileDialog = ({ children }: EditProfileDialogProps) => {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Avatar Section */}
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              <Avatar className="w-24 h-24 cursor-pointer" onClick={handleAvatarClick}>
-                <AvatarImage src={currentAvatar} alt="Profile picture" />
-                <AvatarFallback className="text-lg font-bold bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div 
-                className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 cursor-pointer hover:bg-blue-700 transition-colors"
-                onClick={handleAvatarClick}
-              >
-                <Camera className="w-4 h-4 text-white" />
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">Click to change profile picture</p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
+          <div className="flex flex-col items-center mb-6">
+            <Avatar className="w-20 h-20 sm:w-28 sm:h-28 border-4 border-white shadow-xl ring-4 ring-blue-100 mb-2">
+              <AvatarFallback className="text-2xl sm:text-4xl font-bold bg-blue-600 text-white">
+                {getUserInitials()}
+              </AvatarFallback>
+            </Avatar>
           </div>
 
           {/* Form Fields */}
@@ -173,7 +156,7 @@ const EditProfileDialog = ({ children }: EditProfileDialogProps) => {
               />
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="website">Website</Label>
               <Input
                 id="website"
@@ -181,7 +164,7 @@ const EditProfileDialog = ({ children }: EditProfileDialogProps) => {
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 placeholder="https://yourwebsite.com"
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Form Actions */}
