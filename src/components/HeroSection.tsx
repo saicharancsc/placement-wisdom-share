@@ -40,18 +40,38 @@ const HeroSection = () => {
                 <Link to="/signup" className="w-full sm:w-auto">
                   <Button size="lg" variant="outline" className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
                     Get Started
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    {/* <ArrowRight className="ml-2 w-5 h-5" /> */}
                   </Button>
                 </Link>
               )}
-              <Button 
+
+
+              {user ? (
+                // <Link to="/create" className="w-full sm:w-auto">
+                  <Button  onClick={scrollToExperiences} size="lg" variant="outline" className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
+                    Browse Experiences
+                    {/* <ArrowRight className="ml-2 w-5 h-5" /> */}
+                  </Button>
+                // </Link>
+              ) : (
+                <Link to="/signup" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg">
+                    View Experiences
+                    {/* <ArrowRight className="ml-2 w-5 h-5" /> */}
+                  </Button>
+                </Link>
+              )}
+
+
+              
+              {/* <Button 
                 size="lg" 
                 onClick={scrollToExperiences}
                 variant="outline"
                 className="w-full sm:w-64 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
               >
                 Browse Experiences
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

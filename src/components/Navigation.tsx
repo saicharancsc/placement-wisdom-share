@@ -80,11 +80,6 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                   )}
                   {user ? (
                     <>
-                      <Link to="/">
-                        <Button variant="ghost" className="w-full justify-start">
-                          <Home className="w-4 h-4 mr-2" /> Home
-                        </Button>
-                      </Link>
                       <Link to="/create">
                         <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium justify-start">
                           <PlusCircle className="w-4 h-4 mr-2" /> Share Experience
@@ -111,11 +106,6 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                     </>
                   ) : (
                     <>
-                      <Link to="/">
-                        <Button variant="ghost" className="w-full justify-start">
-                          <Home className="w-4 h-4 mr-2" /> Home
-                        </Button>
-                      </Link>
                       <Link to="/login">
                         <Button variant="outline" className="w-full font-medium justify-start">
                           Login
@@ -153,13 +143,6 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
           <div className="items-center space-x-4 hidden md:flex">
             {user ? (
               <>
-                {/* <Link to="/">
-                  <Button variant="ghost" className="flex items-center">
-                    <Home className="w-4 h-4 mr-2" />
-                    Home
-                  </Button>
-                </Link> */}
-                
                 {/* Resources Button */}
                 {/* <Link to="/resources">
                   <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium flex items-center mr-2">
@@ -211,12 +194,6 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
               </>
             ) : (
               <>
-                <Link to="/">
-                  <Button variant="ghost" className="flex items-center">
-                    <Home className="w-4 h-4 mr-2" />
-                    Home
-                  </Button>
-                </Link>
                 <div className="flex space-x-3">
                   <Link to="/login">
                     <Button variant="outline" className="font-medium">

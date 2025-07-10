@@ -2,7 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, ArrowLeft } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -10,7 +11,10 @@ const Login = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const { signIn, user } = useAuth();
+  const { signIn, user, resetPassword } = useAuth();
+  const [showResetModal, setShowResetModal] = React.useState(false);
+  const [resetEmail, setResetEmail] = React.useState('');
+  const [resetLoading, setResetLoading] = React.useState(false);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -33,9 +37,34 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    setShowResetModal(true);
+    setResetEmail('');
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    try {
+      await resetPassword(resetEmail);
+      setShowResetModal(false);
+    } catch (error) {
+      // Error toast is handled in hook
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-3 sm:p-4">
       <Card className="w-full max-w-xs sm:max-w-md">
+        <div className="flex items-center mb-2">
+          <Link to="/">
+            <Button variant="ghost" size="icon" className="p-2">
+              <ArrowLeft className="w-5 h-5 text-gray-500" />
+            </Button>
+          </Link>
+        </div>
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -75,6 +104,11 @@ const Login = () => {
                 required
                 disabled={loading}
               />
+              <div className="mt-1 text-right">
+                <button type="button" className="text-xs text-blue-600 hover:underline" onClick={handleForgotPassword}>
+                  Forgot password?
+                </button>
+              </div>
             </div>
             <Button 
               type="submit" 
@@ -94,6 +128,34 @@ const Login = () => {
           </div>
         </CardContent>
       </Card>
+      <Dialog open={showResetModal} onOpenChange={setShowResetModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleResetSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="resetEmail" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                Enter your email address
+              </label>
+              <Input
+                id="resetEmail"
+                type="email"
+                value={resetEmail}
+                onChange={e => setResetEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                disabled={resetLoading}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full" disabled={resetLoading}>
+                {resetLoading ? 'Sending...' : 'Send Reset Link'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

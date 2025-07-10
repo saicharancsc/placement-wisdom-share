@@ -2,8 +2,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Home } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 const Signup = () => {
@@ -47,8 +48,15 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-3 sm:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex flex-col items-center justify-center p-3 sm:p-4">
       <Card className="w-full max-w-xs sm:max-w-md">
+        <div className="flex items-center mb-2">
+          <Link to="/">
+            <Button variant="ghost" size="icon" className="p-2">
+              <ArrowLeft className="w-5 h-5 text-gray-500" />
+            </Button>
+          </Link>
+        </div>
         <CardHeader className="text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -134,7 +142,7 @@ const Signup = () => {
             </p>
             <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-xs text-blue-800">
-                📧 After signing up, check your email for a confirmation link. You must confirm your email before you can sign in.
+                📧 After signing up, you can directly sign in using credentials
               </p>
             </div>
           </div>
