@@ -143,12 +143,11 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
           <div className="items-center space-x-4 hidden md:flex">
             {user ? (
               <>
-                {/* Resources Button */}
-                {/* <Link to="/resources">
+                <Link to="/resources">
                   <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium flex items-center mr-2">
                     Resources
                   </Button>
-                </Link> */}
+                </Link>
                 <Link to="/create">
                   <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
                     <PlusCircle className="w-4 h-4 mr-2" />
