@@ -21,6 +21,8 @@ const Admin = () => {
     resourceType: '',
     file: null as File | null,
     link: '',
+    link2: '',
+    link3: '',
     tags: [] as string[],
     author: '',
   });
@@ -78,6 +80,8 @@ const Admin = () => {
         resource_type: form.resourceType,
         file_url: file_url || null,
         link: form.link || null,
+        link2: form.link2 || null,
+        link3: form.link3 || null,
         tags: form.tags,
         author: form.author || null,
       }
@@ -133,8 +137,28 @@ const Admin = () => {
                 <div className="flex-1">
                   <label className="block font-medium mb-1">Or Link</label>
                   <Input type="url" value={form.link} onChange={e => handleChange('link', e.target.value)} placeholder="https://..." />
+                  <label className="block font-medium mb-1 mt-2">Additional Link 1</label>
+                  <Input type="url" value={form.link2} onChange={e => handleChange('link2', e.target.value)} placeholder="https://..." />
+                  <label className="block font-medium mb-1 mt-2">Additional Link 2</label>
+                  <Input type="url" value={form.link3} onChange={e => handleChange('link3', e.target.value)} placeholder="https://..." />
                 </div>
               </div>
+              {form.link && (form.link.includes('youtube.com') || form.link.includes('youtu.be')) && (
+                <div className="mt-4">
+                  <label className="block font-medium mb-1">YouTube Preview</label>
+                  <div className="w-full rounded-lg overflow-hidden border" style={{ aspectRatio: '16/9', minHeight: '320px' }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${getYouTubeId(form.link)}`}
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full min-h-[320px]"
+                      style={{ minHeight: '320px' }}
+                    ></iframe>
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block font-medium mb-1">Tags/Topics</label>
                 <div className="flex flex-wrap gap-2 mt-1">
@@ -164,5 +188,11 @@ const Admin = () => {
     </div>
   );
 };
+
+function getYouTubeId(url: string): string | null {
+  const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[1].length === 11) ? match[1] : null;
+}
 
 export default Admin; 

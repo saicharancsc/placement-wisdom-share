@@ -137,7 +137,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
   const displayName = authorProfile?.name || author?.name || 'Anonymous';
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200 w-full h-full flex flex-col">
+    <Card className="group hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-blue-200 w-full h-full flex flex-col bg-blue-50">
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div className="flex items-center space-x-3">

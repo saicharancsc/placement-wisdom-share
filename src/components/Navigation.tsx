@@ -155,7 +155,7 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                 </Link>
                 <Link to="/create">
                   <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium">
-                    <PlusCircle className="w-4 h-4 mr-2" />
+                    {/* <PlusCircle className="w-4 h-4 mr-2" /> */}
                     Share Experience
                   </Button>
                 </Link>

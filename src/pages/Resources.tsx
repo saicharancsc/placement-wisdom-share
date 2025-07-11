@@ -3,7 +3,7 @@ import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
 
 interface Resource {
   id: string;
@@ -49,7 +49,7 @@ const Resources = () => {
         ) : (
           <div className="space-y-6">
             {resources.map(resource => (
-              <Card key={resource.id} className="w-full">
+              <Card key={resource.id} className="w-full bg-blue-50">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold mb-1">{resource.title}</CardTitle>
                   <div className="flex flex-wrap gap-2 mb-2">
@@ -67,13 +67,24 @@ const Resources = () => {
                   )}
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="prose prose-sm max-w-none text-gray-800">
+                  <div className="prose prose-sm max-w-none text-gray-800" style={{ whiteSpace: 'pre-line' }}>
                     {resource.content.length > 200 ? (
                       <>
-                        {resource.content.slice(0, 200)}... <br />
+                        {resource.content.slice(0, 200).split('\n').map((line, idx) => (
+                          <React.Fragment key={idx}>
+                            {line}
+                            <br />
+                          </React.Fragment>
+                        ))}
+                        ... <br />
                       </>
                     ) : (
-                      resource.content
+                      resource.content.split('\n').map((line, idx) => (
+                        <React.Fragment key={idx}>
+                          {line}
+                          <br />
+                        </React.Fragment>
+                      ))
                     )}
                   </div>
                   <div className="flex justify-end">
@@ -82,7 +93,12 @@ const Resources = () => {
                   {(resource.file_url || resource.link) && (
                     <div className="mt-2">
                       {resource.file_url && (
-                        <a href={resource.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline mr-4">View File</a>
+                        <>
+                          <a href={resource.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline mr-4">View File</a>
+                          <a href={resource.file_url} download className="inline-flex items-center justify-center text-blue-600 hover:text-blue-800 mr-2" title="Download File">
+                            <Download className="w-5 h-5" />
+                          </a>
+                        </>
                       )}
                       {resource.link && (
                         <a href={resource.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">External Link</a>

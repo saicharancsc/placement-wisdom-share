@@ -192,7 +192,7 @@ const BlogPost = () => {
           </Button>
         </div>
 
-        <Card className="mb-6 sm:mb-8">
+        <Card className="mb-6 sm:mb-8 bg-blue-50">
           <CardHeader className="pb-4 sm:pb-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
               <div className="flex items-center space-x-2 sm:space-x-3">

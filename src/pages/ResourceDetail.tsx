@@ -19,6 +19,12 @@ interface Resource {
   created_at?: string;
 }
 
+function getYouTubeId(url: string): string | null {
+  const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[1].length === 11) ? match[1] : null;
+}
+
 const ResourceDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [resource, setResource] = useState<Resource | null>(null);
@@ -52,7 +58,7 @@ const ResourceDetail = () => {
         ) : !resource ? (
           <div className="text-center text-gray-500 py-20">Resource not found.</div>
         ) : (
-          <Card className="w-full">
+          <Card className="w-full bg-blue-50">
             <CardHeader>
               <CardTitle className="text-2xl font-bold mb-1">{resource.title}</CardTitle>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -70,13 +76,31 @@ const ResourceDetail = () => {
               )}
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="prose max-w-none text-gray-800">
-                {resource.content}
+              <div className="prose max-w-none text-gray-800" style={{ whiteSpace: 'pre-line' }}>
+                {resource.content.split('\n').map((line, idx) => (
+                  <React.Fragment key={idx}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
               </div>
               {(resource.file_url || resource.link) && (
                 <div className="mt-2">
                   {resource.file_url && (
                     <a href={resource.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline mr-4">View File</a>
+                  )}
+                  {resource.link && (resource.link.includes('youtube.com') || resource.link.includes('youtu.be')) && getYouTubeId(resource.link) && (
+                    <div className="w-full rounded-lg overflow-hidden border mb-4" style={{ aspectRatio: '16/9', minHeight: '320px' }}>
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYouTubeId(resource.link)}`}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full min-h-[320px]"
+                        style={{ minHeight: '320px' }}
+                      ></iframe>
+                    </div>
                   )}
                   {resource.link && (
                     <a href={resource.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">External Link</a>
