@@ -18,6 +18,9 @@ import Bookmarks from "./pages/Bookmarks";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import ResetPassword from "./pages/ResetPassword";
+import Admin from "./pages/Admin";
+import Resources from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +42,9 @@ const App = () => (
             <Route path="/profile/:userId" element={<PublicUserProfile />} />
             <Route path="/liked" element={<LikedPosts />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/resource/:id" element={<ResourceDetail />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />

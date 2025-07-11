@@ -80,8 +80,13 @@ const Navigation = ({ searchQuery = '', onSearchChange }: NavigationProps) => {
                   )}
                   {user ? (
                     <>
+                      <Link to="/resources">
+                        <Button variant="ghost" className="w-full justify-start">
+                          <BookOpen className="w-4 h-4 mr-2" /> Resources
+                        </Button>
+                      </Link>
                       <Link to="/create">
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium justify-start">
+                        <Button variant="ghost" className="w-full justify-start">
                           <PlusCircle className="w-4 h-4 mr-2" /> Share Experience
                         </Button>
                       </Link>
