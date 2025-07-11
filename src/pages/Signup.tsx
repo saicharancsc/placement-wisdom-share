@@ -36,6 +36,7 @@ const Signup = () => {
       await signUp(formData.email, formData.password, formData.name);
       // Don't navigate immediately - let the user confirm their email first
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      // navigate('/login');
     } catch (error) {
       console.error('Signup error:', error);
     } finally {
