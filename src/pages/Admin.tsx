@@ -92,7 +92,16 @@ const Admin = () => {
     }
     setSuccess('Resource submitted successfully!');
     setForm({
-      title: '', description: '', content: '', resourceType: '', file: null, link: '', tags: [], author: ''
+      title: '',
+      description: '',
+      content: '',
+      resourceType: '',
+      file: null,
+      link: '',
+      link2: '',
+      link3: '',
+      tags: [],
+      author: ''
     });
   };
 

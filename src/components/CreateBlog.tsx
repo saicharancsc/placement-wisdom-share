@@ -319,7 +319,11 @@ const CreateBlog = () => {
                   id="content"
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
-                  placeholder="Share your experience in detail..."
+                  placeholder="Selection Process Overview Includes:
+1) Rounds of selection (e.g., aptitude, coding, technical interviews, HR).
+2) Elaborate each round(e.g., what they ask).
+3) Tips(e.g., what topics need to cover).
+4) Resume Tips & Resources"
                   rows={6}
                   required
                   disabled={createBlogMutation.isPending || updateBlogMutation.isPending}
