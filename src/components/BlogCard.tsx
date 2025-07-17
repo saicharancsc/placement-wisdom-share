@@ -34,6 +34,7 @@ const BlogCard: React.FC<BlogCardProps> = ({
   id,
   title,
   company,
+  college,
   role,
   author,
   author_id,
@@ -209,6 +210,11 @@ const BlogCard: React.FC<BlogCardProps> = ({
               {role}
             </Badge>
           </div>
+          {college && (
+            <div className="text-xs text-gray-500 mt-1 ml-1">
+              College: {college}
+            </div>
+          )}
           
           <Link to={fromTab ? `/blog/${id}?tab=${fromTab}` : `/blog/${id}` }>
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">

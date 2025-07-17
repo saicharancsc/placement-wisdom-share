@@ -245,6 +245,11 @@ const BlogPost = () => {
                   {blogPost.role}
                 </Badge>
               </div>
+              {blogPost.college && (
+                <div className="text-xs text-gray-500 mt-1 ml-1">
+                  College: {blogPost.college}
+                </div>
+              )}
               
               <h1 className="text-lg sm:text-3xl font-bold text-gray-900 leading-tight">
                 {blogPost.title}
